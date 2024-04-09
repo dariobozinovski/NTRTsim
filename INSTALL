@@ -303,5 +303,5 @@ anything.
 	4)run setup.sh
 	5)run bin/build.sh
 
-What I had to do: 
+What Dario had to do: 
 -install boost manually to be able to setup , run setup multiple times
