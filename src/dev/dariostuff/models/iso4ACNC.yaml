@@ -1,0 +1,76 @@
+nodes:
+  strut5n2: [2.5, 0.955, 0]
+  strut1n2: [0, 5, 1.545]
+  strut4n1: [1.545, 2.5, 2.5]
+  strut2n2: [0, 5, -1.545]
+  centro1_11_6: [2.3, 2.1750, 2.2487]
+  strut6n1: [-2.5, 4.045, 0]
+  strut3n1: [-1.545, 2.5, 2.5]
+  strut4n2: [1.545, 2.5, -2.5]
+  strut5n1: [-2.5, 0.955, 0]
+  strut1n1: [0, 0, 1.545]
+  strut3n2: [-1.545, 2.5, -2.5]
+  centro10_7_4: [-2.1817, 6.2267, -2.1817]
+  strut6n2: [2.5, 4.045, 0]
+  strut2n1: [0, 0, -1.545]
+pair_groups:
+  springs:
+    
+    - [strut1n1, strut4n1]
+    - [strut5n2, strut4n1]
+    - [strut1n1, strut3n1]
+    - [strut1n1, strut5n1]
+    - [strut3n1, strut5n1]
+    
+    - [strut2n1, strut4n2]
+    - [strut5n2, strut4n2]
+    - [strut2n1, strut3n2]
+    - [strut2n1, strut5n1]
+    - [strut3n2, strut5n1]
+    - [strut4n1, strut6n2]
+    - [strut4n1, strut1n2]
+    - [strut6n2, strut1n2]
+    - [strut6n2, strut4n2]
+    - [strut6n2, strut2n2]
+    - [strut4n2, strut2n2]
+    
+    - [strut2n2, strut3n2]
+    - [strut6n1, strut3n2]
+    - [strut3n1, strut6n1]
+    - [strut3n1, strut1n2]
+    
+  activated_cable:
+    - [strut1n1, strut5n2]
+    - [strut2n1, strut5n2]
+    - [strut6n1, strut1n2]
+    - [strut2n2, strut6n1]
+  prism_rod:
+    - [strut1n1, strut1n2]
+    - [strut2n1, strut2n2]
+    - [strut3n1, strut3n2]
+    - [strut4n1, strut4n2]
+    - [strut5n1, strut5n2]
+    - [strut6n1, strut6n2]
+builders:
+  springs:
+    class: tgBasicActuatorInfo
+    parameters:
+      max_tension: 70000
+      pretension: 100
+      damping: 20
+      stiffness: 1800
+  prism_rod:
+    class: tgRodInfo
+    parameters:
+      density: 0.577
+      friction: 0.99
+      radius: 0.06
+      restitution: 0.0
+      roll_friction: 0.011
+  activated_cable:
+    class: tgBasicActuatorInfo
+    parameters:
+      stiffness: 1800
+      max_tension: 400.0
+      pretension: 0
+      damping: 200

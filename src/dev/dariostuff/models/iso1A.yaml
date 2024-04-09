@@ -1,0 +1,103 @@
+nodes:
+#pos of nodes strut(n of node)n(side)
+#strut length 8.09 dm, side length 5
+  strut1n1: [0, 0, 2.5 ]
+  strut1n2: [0, 8.09, 2.5]
+  strut2n1: [0, 0, -2.5]
+  strut2n2: [0, 8.09, -2.5]
+  
+  strut3n1: [-2.5, 4.045, 4.045]
+  strut3n2: [-2.5, 4.045, -4.045]
+  strut4n1: [2.5, 4.045, 4.045]
+  strut4n2: [2.5, 4.045, -4.045]
+
+  strut5n1: [-4.045, 1.95, 0]
+  strut5n2: [4.045, 1.95, 0]
+  strut6n1: [-4.045, 6.545, 0]
+  strut6n2: [4.045, 6.545, 0]
+#pos of triangle orthocenter of faces 1_11_6 and 10_7_4
+  centro1_11_6: [2.3, 2.1750, 2.2487]
+  centro10_7_4: [-2.1817,6.2267,-2.1817]
+
+pair_groups:
+  prism_rod:
+#struts
+    - [strut1n1, strut1n2]
+    - [strut2n1, strut2n2]
+    
+    - [strut3n1, strut3n2]
+    - [strut4n1, strut4n2]
+
+    - [strut5n1, strut5n2]
+    - [strut6n1, strut6n2]
+
+
+  springs:
+#elastic springs
+    - [strut1n1, strut5n2]
+    - [strut1n1, strut4n1]
+    - [strut5n2, strut4n1]
+
+    - [strut1n1, strut3n1]
+    - [strut1n1, strut5n1]
+    - [strut3n1, strut5n1]
+
+    - [strut2n1, strut5n2]
+    - [strut2n1, strut4n2]
+    - [strut5n2, strut4n2]
+
+    - [strut2n1, strut3n2]
+    - [strut2n1, strut5n1]
+    - [strut3n2, strut5n1]
+
+    - [strut4n1, strut6n2]
+    - [strut4n1, strut1n2]
+    - [strut6n2, strut1n2]
+
+    - [strut6n2, strut4n2]
+    - [strut6n2, strut2n2]
+    - [strut4n2, strut2n2]
+
+    - [strut2n2, strut6n1]
+    - [strut2n2, strut3n2]
+    - [strut6n1, strut3n2]
+
+    - [strut3n1, strut6n1]
+    - [strut3n1, strut1n2]
+    - [strut6n1, strut1n2]
+
+   
+  activated_cable:
+  #actuator
+    - [strut1n1,strut2n2]  
+
+builders:
+  #density (kg/dm3)wood: 0.9 
+  
+  prism_rod:
+    class: tgRodInfo
+    parameters:
+      density: 0.577
+      radius: 0.06
+      friction: 0.99
+      roll_friction: 0.011
+      restitution: 0.0
+  springs:
+  #stiffness (N/dm2) rubber_band: 100 / 1000 stiff cable: 200000 
+  #damping (kg/s) rubber_band: 0.01/1
+    class: tgBasicActuatorInfo
+    parameters:
+      stiffness: 4000.00
+      damping: 20
+      pretension: 100
+      max_tension: 70000.0
+  
+  activated_cable:
+    class: tgBasicActuatorInfo
+    parameters:
+      stiffness: 8000
+      damping: 200
+      pretension: 1
+      max_tension: 70000.0
+  
+

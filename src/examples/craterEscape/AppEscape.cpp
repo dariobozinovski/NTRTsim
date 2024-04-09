@@ -64,19 +64,21 @@ int main(int argc, char** argv)
     tgWorld *world = createWorld();
 
     // Second create the view
-    //tgSimViewGraphics *view = createGraphicsView(world); // For visual experimenting on one tensegrity
-    tgSimView       *view = createView(world);         // For running multiple episodes
+    tgSimViewGraphics *view = createGraphicsView(world); // For visual experimenting on one tensegrity
+    //tgSimView       *view = createView(world);         // For running multiple episodes
 
     // Third create the simulation
     tgSimulation *simulation = new tgSimulation(*view);
 
     // Fourth create the models with their controllers and add the models to the simulation
     EscapeModel* const model = new EscapeModel();
-
+    
+    //LEARNING START
+    
     /* Required for setting up learning file input/output. */
     const std::string suffix((argc > 1) ? argv[1] : "default");
     
-    
+    //LEARNING END
     
     // Fifth create controller and attach it to the model
     double initialLength = 9.0; // decimeters
@@ -143,7 +145,7 @@ tgSimView *createView(tgWorld *world) {
 
 /** Run a series of episodes for nSteps each */
 void simulate(tgSimulation *simulation) {
-    int nEpisodes = 1; // Number of episodes ("trial runs")
+    int nEpisodes = 2; // Number of episodes ("trial runs")
     int nSteps = 60000; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
     for (int i=0; i<nEpisodes; i++) {
         simulation->run(nSteps);
