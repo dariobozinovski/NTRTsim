@@ -195,3 +195,4 @@ int main(int argc, char** argv)
 //salvare simulazioni su git
 //trovare l'errore nelle simulazioni con dati realistici forse la alta tensione porta a microvibrazioni che spostano il corpo
 //colorare le molle o numerarle nella simulazione per identificarle
+//urca
