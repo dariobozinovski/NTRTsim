@@ -76,6 +76,10 @@ void updateYAMLStiffness(const std::string& filename, double newStiffness) {
     }
 }
 
+/// @brief 
+/// @param argc 
+/// @param argv 
+/// @return 
 int main(int argc, char** argv)
 {
     // For this YAML parser app, need to check that an argument path was
@@ -167,13 +171,14 @@ int main(int argc, char** argv)
       simulation.addDataManager(myDataLogger);
       }
 
-    int nEpisodes = 0; // Number of episodes ("trial runs")
+    int nEpisodes = 1; // Number of episodes ("trial runs")
     int nSteps = 100000; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
-    for (int i=0; i<=nEpisodes; i++) {
+    for (int i=0; i<nEpisodes; i++) {
       if (i > 0) { // Reset only for subsequent runs
         myController->nextStep(); // Reset the controller state
+        updateYAMLStiffness(yamlFilePath,1800+100*i);//set new stiffness      
       }
-      updateYAMLStiffness(yamlFilePath,1800+100*i);//set new stiffness
+      
       simulation.run(nSteps);
       std::cout << "Episode " << (i+1 ) << " completed."<< std::endl;
       simulation.reset();
@@ -188,4 +193,5 @@ int main(int argc, char** argv)
 //fare README per le analisi
 //salvare tutto su git 
 //salvare simulazioni su git
-//trovare l'errore nelle simulazioni
+//trovare l'errore nelle simulazioni con dati realistici forse la alta tensione porta a microvibrazioni che spostano il corpo
+//colorare le molle o numerarle nella simulazione per identificarle
