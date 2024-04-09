@@ -18,3 +18,17 @@ lengthcontroller
 added a jumping mechanism: when jumptime reached restlenght resets to initial restlength
 
 -(192)sweep next step function to change values of the controller see example minlenght change
+
+
+git
+
+to submittare changes to branch
+git status
+git add .
+git status
+git commit -m "a message"
+git push fork nome name-of-branch
+
+to create new branch
+
+git checkout -b name-branch
