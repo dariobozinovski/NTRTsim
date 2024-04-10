@@ -304,4 +304,18 @@ anything.
 	5)run bin/build.sh
 
 What Dario had to do: 
--install boost manually to be able to setup , run setup multiple times
+-follow instructions about dependencies (as in original instuctions)
+-firstly as always
+	sudo apt-get update
+-remove all libboost libaries 
+	sudo apt-get -y --purge remove libboost*
+
+install only this:
+	sudo apt-get install libboost-regex1.74.0
+to check current libbost installations, only libboost-regex1.74.0 should appear
+	dpkg -l | grep boost
+-and again
+	sudo apt-get update
+-run setup.sh (as in original instuctions)
+-run bin/build (as in original instuctions)
+	
