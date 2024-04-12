@@ -116,7 +116,7 @@ int main(int argc, char** argv)
     // second argument.
     TensegrityModel* const myModel = new TensegrityModel(argv[1],false);
    
-    std::string yamlFilePath = "/home/dario/NTRTsim/src/dev/dariostuff/models/iso3A.yaml";
+    std::string yamlFilePath = "/home/ubuntu/NTRTsim/src/dev/dariostuff/models/iso4ACNC.yaml";
     
     // Attach a controller to the model, if desired.
     // This is a controller that interacts with a generic TensegrityModel as
@@ -125,9 +125,9 @@ int main(int argc, char** argv)
     // Parameters for the LengthControllerYAML are specified in that .h file,
     // repeated here:
     double startTime = 2.0;
-    double minLength = 0.5;
+    double minLength = 0.1;
     double rate = 1;
-    double jumpTime = 7.0;
+    double jumpTime = 8;
     std::vector<std::string> tagsToControl;
     // See the threeBarModel.YAML file to see where "vertical_string" is used.
     tagsToControl.push_back("activated_cable");
@@ -142,14 +142,14 @@ int main(int argc, char** argv)
     simulation.addModel(myModel);
     
     //data logger
-    bool datalogger=0;
+    bool datalogger=1;
     if(datalogger){
       // Add sensors using the new sensing framework
       // A string prefix for the filename
       std::string log_filename = "~/NTRTsim/NTRTsim_logs/to_plot/";
     
       // The time interval between sensor readings:
-      double timeInterval = 0.2;
+      double timeInterval = 0.01;
       // First, create the data manager
       tgDataLogger2* myDataLogger = new tgDataLogger2(log_filename, timeInterval);
       //std::cout << myDataLogger->toString() << std::endl;
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
     for (int i=0; i<nEpisodes; i++) {
       if (i > 0) { // Reset only for subsequent runs
         myController->nextStep(); // Reset the controller state
-        updateYAMLStiffness(yamlFilePath,1800+100*i);//set new stiffness      
+        updateYAMLStiffness(yamlFilePath,100+10*i);//set new stiffness      
       }
       
       simulation.run(nSteps);
@@ -189,10 +189,13 @@ int main(int argc, char** argv)
     return 0;
 }
 
-//provare altre forme
-//fare README per le analisi
-//salvare tutto su git 
-//salvare simulazioni su git
-//trovare l'errore nelle simulazioni con dati realistici forse la alta tensione porta a microvibrazioni che spostano il corpo
+//provare altre forme -non credo che faro
+//fare README per le analisi -fatto
+//salvare tutto su git -fatto
+//salvare simulazioni su git -fatto
+//trovare l'errore nelle simulazioni con dati realistici forse la alta tensione porta a microvibrazioni che spostano il corpo -ora funziona non so perche cambiato hardware
 //colorare le molle o numerarle nella simulazione per identificarle
-//urca
+//riominciare da capo con modello semplice:
+//centrl actuated 3 A fare analisi e farla bene e analizzare i dati capire percentuale di energia in salto e quanta invece persa 
+// abbasasre rate di compressione e creare grafico di tensione attuatore per vedere come si distribuisce lo stress durante la copressione
+//

@@ -39,7 +39,7 @@ builders:
   springs:
     parameters:
       max_tension: 70000
-      stiffness: 1800
+      stiffness: 4000
       pretension: 100
       damping: 20
     class: tgBasicActuatorInfo
@@ -54,7 +54,7 @@ builders:
     parameters:
       restitution: 0.0
       friction: 0.99
-      density: 0.577
+      density: 1.7683
       roll_friction: 0.011
       radius: 0.06
     class: tgRodInfo

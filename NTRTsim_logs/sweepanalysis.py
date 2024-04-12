@@ -8,7 +8,7 @@ from shutil import rmtree
 num_rods = 6
 data_per_rod = 7  # XYZ position, Euler angles, mass
 data_per_spring = 3  # RestLength, CurrentLength, Tension
-num_actuated_cables = 3  # The same data format as springs, but we'll exclude them from energy calculation
+num_actuated_cables = 4  # The same data format as springs, but we'll exclude them from energy calculation
 
 
 #which graph do I want
@@ -17,8 +17,8 @@ CMtoHeight=True
 
 
 # Definire i percorsi delle directory
-directory_path = "/home/dario/NTRTsim_logs/to_plot"
-directory_path_save = "/home/dario/NTRTsim_logs/plots"
+directory_path = "/home/ubuntu/NTRTsim/NTRTsim_logs/to_plot"
+directory_path_save = "/home/ubuntu/NTRTsim/NTRTsim_logs/plots"
 
 # Creare le directory se non esistono
 if not os.path.exists(directory_path):
@@ -103,7 +103,7 @@ for i,file_name in enumerate(all_files):
 if(CMtoHeight):    
     plt.figure(figsize=(14, 7))
     print(max_y_positions)
-    plt.plot(num_of_sim, max_y_positions, label='CM max Y-Position')
+    plt.bar(num_of_sim, max_y_positions, label='CM max Y-Position')
     plt.grid(True) 
     plt.xlabel('sim')
 

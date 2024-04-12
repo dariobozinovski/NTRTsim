@@ -78,5 +78,8 @@
         "typeinfo": "cpp",
         "valarray": "cpp"
     },
-    "CodeGPT.apiKey": "OpenAI"
+    "CodeGPT.apiKey": "OpenAI",
+    "python.analysis.extraPaths": [
+        "./env/build/boost/libs/python/test"
+    ]
 }

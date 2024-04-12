@@ -1,24 +1,48 @@
-nodes:
-  strut1n1: [0, 1, 2.5 ]
-  strut1n2: [0, 9.09, 2.5]
-  strut2n1: [0, 1, -2.5]
-  strut2n2: [0, 9.09, -2.5]
+# nodes:
+# #pos of nodes strut(n of node)n(side)
+# #strut length 8.09 dm, side length 5
+#   strut1n1: [0, 0, 2.5 ]
+#   strut1n2: [0, 8.09, 2.5]
+#   strut2n1: [0, 0, -2.5]
+#   strut2n2: [0, 8.09, -2.5]
   
-  strut3n1: [-2.5, 5.045, 4.045]
-  strut3n2: [-2.5, 5.045, -4.045]
-  strut4n1: [2.5, 5.045, 4.045]
-  strut4n2: [2.5, 5.045, -4.045]
-  
-  strut5n1: [-4.045, 2.95, 0]
-  strut5n2: [4.045, 2.95, 0]
-  strut6n1: [-4.045, 7.545, 0]
-  strut6n2: [4.045, 7.545, 0]
+#   strut3n1: [-2.5, 4.045, 4.045]
+#   strut3n2: [-2.5, 4.045, -4.045]
+#   strut4n1: [2.5, 4.045, 4.045]
+#   strut4n2: [2.5, 4.045, -4.045]
 
+#   strut5n1: [-4.045, 1.95, 0]
+#   strut5n2: [4.045, 1.95, 0]
+#   strut6n1: [-4.045, 6.545, 0]
+#   strut6n2: [4.045, 6.545, 0]
+# #pos of triangle orthocenter of faces 1_11_6 and 10_7_4
+#   centro1_11_6: [2.3, 2.1750, 2.2487]
+#   centro10_7_4: [-2.1817,6.2267,-2.1817]
+
+#strut lenght 0.5m, spring lenght 0.30902
+nodes:
+  
+  strut1n1: [0, 0,0.1545]
+  strut1n2: [0, 0.5, 0.1545]
+  strut2n1: [0, 0, -0.1545]
+  strut2n2: [0, 0.5, -0.1545]
+  strut3n1: [-0.1545, 0.25, 0.25]
+  strut3n2: [-0.1545, 0.25, -0.25]
+  strut4n1: [0.1545, 0.25, 0.25]
+  strut4n2: [0.1545, 0.25, -0.25]
+  strut5n1: [-0.25, 0.0955, 0]
+  strut5n2: [0.25, 0.0955, 0]
+  strut6n1: [-0.25, 0.4045, 0]
+  strut6n2: [0.25, 0.4045, 0]
+
+  centro10_7_4: [-0.21817, 0.62267, -0.21817]
+  centro1_11_6: [0.23, 0.21750, 0.22487]
   
   
-  
+
 pair_groups:
   prism_rod:
+#struts
     - [strut1n1, strut1n2]
     - [strut2n1, strut2n2]
     
@@ -28,7 +52,9 @@ pair_groups:
     - [strut5n1, strut5n2]
     - [strut6n1, strut6n2]
 
+
   springs:
+#elastic springs
     - [strut1n1, strut5n2]
     - [strut1n1, strut4n1]
     - [strut5n2, strut4n1]
@@ -61,28 +87,39 @@ pair_groups:
     - [strut3n1, strut1n2]
     - [strut6n1, strut1n2]
 
+   
   activated_cable:
-    - [strut1n1, strut2n2]
-    - [strut5n2, strut6n1]
-    - [strut4n1, strut3n2]
+  #actuator
+      
 
 builders:
+  #density (kg/dm3)wood: 0.9 
+  #for L=5 dm r=0.06dm m=0.1kg then density=1.7683kg/dm^3 
   prism_rod:
     class: tgRodInfo
     parameters:
-      density: 0.1
-      radius: 0.1
+      density: 1.7683
+      radius: 0.06
+      friction: 0.99
+      roll_friction: 0.011
+      restitution: 0.0
   springs:
+  #stiffness (N/dm2) rubber_band: 100 / 1000 stiff cable: 200000 
+  #damping (kg/s) rubber_band: 0.01/1
     class: tgBasicActuatorInfo
     parameters:
-      stiffness: 1500.0
-      damping: 2.5
-      pretension: 5.500
+      stiffness: 4000.00
+      damping: 20
+      pretension: 100
       max_tension: 70000.0
+  
   activated_cable:
     class: tgBasicActuatorInfo
     parameters:
-      stiffness: 1000
-      damping: 0.1
-      pretension: 0
+      stiffness: 8000
+      damping: 200
+      pretension: 1
       max_tension: 70000.0
+  
+
+

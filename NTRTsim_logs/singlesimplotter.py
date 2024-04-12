@@ -9,7 +9,7 @@ from shutil import rmtree
 num_rods = 6
 data_per_rod = 7  # XYZ position, Euler angles, mass
 data_per_spring = 3  # RestLength, CurrentLength, Tension
-num_actuated_cables = 3  # The same data format as springs, but we'll exclude them from energy calculation
+num_actuated_cables = 4  # The same data format as springs
 
 
 #which graph do I want
@@ -17,12 +17,12 @@ CMtoHeight=1
 TotEneStor=1
 springStackPlot=1
 extensionRate=1
-
+actuator_tension_plotter=1
 
 #num_rods*data_per_rod+
 # Definire i percorsi delle directory
-directory_path = "/home/dario/NTRTsim_logs/to_plot"
-directory_path_save = "/home/dario/NTRTsim_logs/plots"
+directory_path = "/home/ubuntu/NTRTsim/NTRTsim_logs/to_plot"
+directory_path_save = "/home/ubuntu/NTRTsim/NTRTsim_logs/plots"
 
 # Creare le directory se non esistono
 if not os.path.exists(directory_path):
@@ -38,22 +38,27 @@ all_files = [f for f in all_files if os.path.isfile(os.path.join(directory_path,
 file_counter = 1
 
 for file_name in all_files:
-    # Costruire il percorso completo del file originale
-    original_file_path = os.path.join(directory_path, file_name)
-    
     # Definire il nuovo nome del file e la nuova directory per i plot
-    new_file_name = f"sim{file_counter}"
-    new_file_path = os.path.join(directory_path, new_file_name + ".txt")
+    new_file_name = f"sim{file_counter}.csv"
+    new_file_path = os.path.join(directory_path, new_file_name)
     new_plots_directory_path = os.path.join(directory_path_save, f"sim{file_counter}_plots")
+    
+    # Incrementa il contatore finché il nome del file "simN.csv" è già occupato
+    while os.path.exists(new_file_path):
+        file_counter += 1
+        new_file_name = f"sim{file_counter}.csv"
+        new_file_path = os.path.join(directory_path, new_file_name)
+        new_plots_directory_path = os.path.join(directory_path_save, f"sim{file_counter}_plots")
 
-     # Check if plot directory exists and clean it
+    # Rinomina il file originale nel nuovo percorso con il nome disponibile
+    os.rename(os.path.join(directory_path, file_name), new_file_path)
+
+    # Controlla e crea la directory per i plot se non esiste, puliscila se esiste
     if os.path.exists(new_plots_directory_path):
         rmtree(new_plots_directory_path)
     os.makedirs(new_plots_directory_path)
-
-    # Rename the original file if it's not already renamed
-    if not os.path.exists(new_file_path):
-        os.rename(original_file_path, new_file_path)
+    
+    
 
     # Aggiornare il codice di analisi per utilizzare il nuovo percorso del file
     # e la directory per i plot, poi eseguire l'analisi e salvare i plot nella nuova directory
@@ -92,7 +97,7 @@ for file_name in all_files:
     df=df.drop(columns=['to_delete'])
 
     #remove first to seconds
-    df=df.iloc[10:].reset_index(drop=True)
+    df=df.iloc[100:].reset_index(drop=True)
     # Display the maximum value in the time column
     #print("Maximum time value:", df2['Time'].max())
 
@@ -134,7 +139,7 @@ for file_name in all_files:
 
             extension[extension < 0] = 0  # Only consider extension, not compression
 
-            energy_stored += 0.5 * (extension ** 2)  # Assuming k=1
+            energy_stored += 0.5 * (extension*0.1 ** 2)  # Assuming k=1, extension in dm 
 
         # Plot the energy stored in springs over time
         plt.figure(figsize=(14, 7))
@@ -174,13 +179,16 @@ for file_name in all_files:
         plt.savefig(plot3_path)
         plt.close()
 
+
+
+    #graph stackplot spring energies
     if(springStackPlot):
-        #graph stackplot spring energies
+        
         energies = []
         for spring in range(1, total_spring_columns + 1):
             extension = df[f'Spring{spring}_CurrentLength'] - df[f'Spring{spring}_RestLength']
             extension[extension < 0] = 0  # Ignora la compressione
-            energy = 0.5 * (extension ** 2)  # E = 1/2 kx^2, assumendo k=1
+            energy = 0.5 * (extension *0.1** 2)  # E = 1/2 kx^2, assumendo k=1
             energies.append(energy)
 
         # Convertire l'elenco delle energie in un DataFrame per facilitare il plot
@@ -202,7 +210,45 @@ for file_name in all_files:
         plot_path4 = os.path.join(new_plots_directory_path,"stacked_energy_plot.png")
         plt.savefig(plot_path4)
         plt.close()
+    
+
+    #actuated cable tension
+    if(actuator_tension_plotter):
+        plt.figure(figsize=(14, 7))
+
+        # Plotting tension for each actuated cable
+        for cable in range(1, num_actuated_cables + 1):
+            plt.plot(df['Time'], df[f'ActuatedCable{cable}_Tension'], label=f'Actuated Cable {cable} Tension')
         
+        # Customizing the plot
+        plt.xlabel('Time')
+        plt.ylabel('Tension')
+        plt.title('Tension in Actuated Cables Over Time')
+        plt.legend()
+
+        # Save the plot
+        plot_path = os.path.join(new_plots_directory_path, "actuated_cable_tensions_vs_time.png")
+        plt.savefig(plot_path)
+        plt.close()
+
+    plt.figure(figsize=(14, 7))
+
+    # Plotting tension for each actuated cable
+    for cable in range(1, num_actuated_cables + 1):
+        plt.plot(df['Time'], df[f'ActuatedCable{cable}_RestLength'], label=f'Actuated Cable {cable} RestLength')
+        plt.plot(df['Time'], df[f'ActuatedCable{cable}_CurrentLength']/df[f'ActuatedCable{cable}_RestLength'], label=f'Actuated Cable {cable} actualLength over restlenght ')
+    # Customizing the plot
+    plt.xlabel('Time')
+    plt.ylabel('restlenght')
+    plt.title('restlenght in Actuated Cables Over Time')
+    plt.legend()
+
+    # Save the plot
+    plot_path = os.path.join(new_plots_directory_path, "actuated_cable_restlenght_vs_time.png")
+    plt.savefig(plot_path)
+    plt.close()
+    
+
 
     # Incrementare il contatore per il prossimo file
     file_counter += 1
