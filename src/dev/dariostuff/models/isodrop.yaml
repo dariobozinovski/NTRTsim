@@ -2,7 +2,7 @@
 
 substructures:
   6BarSphere:
-    path: ./iso4ACNC.yaml
+    path: ./iso3A.yaml
     translation: [0,2,0]
     #rotation:
     #  axis: [-3,1,1]
