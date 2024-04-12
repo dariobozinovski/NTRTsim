@@ -70,6 +70,6 @@ builders:
     class: tgBasicActuatorInfo
     parameters:
       max_tension: 70000
-      stiffness: 1800
+      stiffness: 400
       pretension: 100
       damping: 20
