@@ -146,7 +146,7 @@ int main(int argc, char** argv)
     if(datalogger){
       // Add sensors using the new sensing framework
       // A string prefix for the filename
-      std::string log_filename = "~/NTRTsim_logs/to_plot/";
+      std::string log_filename = "~/NTRTsim/NTRTsim_logs/to_plot/";
     
       // The time interval between sensor readings:
       double timeInterval = 0.2;
