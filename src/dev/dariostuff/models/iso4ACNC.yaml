@@ -44,14 +44,14 @@ builders:
   springs:
     class: tgBasicActuatorInfo
     parameters:
-      stiffness: 400
+      stiffness: 300
       pretension: 100
-      damping: 20
+      damping: 10
       max_tension: 70000
   activated_cable:
     parameters:
-      damping: 200
-      max_tension: 800.0
+      damping: 10
+      max_tension: 500.0
       stiffness: 10000
       pretension: 0
     class: tgBasicActuatorInfo

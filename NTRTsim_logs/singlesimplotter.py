@@ -5,12 +5,16 @@ import matplotlib.pyplot as plt
 import os
 from itertools import cycle
 from shutil import rmtree
+import plotly.express as px
+import plotly.graph_objects as go
 # Constants based on the structure described
 num_rods = 6
 data_per_rod = 7  # XYZ position, Euler angles, mass
 data_per_spring = 3  # RestLength, CurrentLength, Tension
 num_actuated_cables = 4  # The same data format as springs
 
+#physical parameters
+k=300
 
 #which graph do I want
 CMtoHeight=1
@@ -81,13 +85,14 @@ for file_name in all_files:
 
         column_names += [f'Rod{rod}_X', f'Rod{rod}_Y', f'Rod{rod}_Z', f'Rod{rod}_EulerX', f'Rod{rod}_EulerY', f'Rod{rod}_EulerZ',f'Rod{rod}_mass']
 
+    for cable in range(1, num_actuated_cables + 1):
+
+        column_names += [f'ActuatedCable{cable}_RestLength', f'ActuatedCable{cable}_CurrentLength', f'ActuatedCable{cable}_Tension']
     for spring in range(1, total_spring_columns + 1):
 
         column_names += [f'Spring{spring}_RestLength', f'Spring{spring}_CurrentLength', f'Spring{spring}_Tension']
 
-    for cable in range(1, num_actuated_cables + 1):
-
-        column_names += [f'ActuatedCable{cable}_RestLength', f'ActuatedCable{cable}_CurrentLength', f'ActuatedCable{cable}_Tension']
+    
     column_names += ['to_delete']
 
     # Re-read the file with manual column names
@@ -99,7 +104,7 @@ for file_name in all_files:
     #remove first to seconds
     df=df.iloc[100:].reset_index(drop=True)
     # Display the maximum value in the time column
-    #print("Maximum time value:", df2['Time'].max())
+    
 
     # Assuming 'y_positions' is derived from a specific rod's Y position, let's verify the first rod's Y position data
     # Replace 'Rod1_Y' with the actual column name for the first rod's Y position
@@ -121,14 +126,32 @@ for file_name in all_files:
 
         plt.ylabel('Y-Position of Center of Mass')
 
-        plt.title('Y-Position of the Center of Mass Over Time for Each Rod')
+        plt.title('Y-Position of the Center of Mass Over Time')
         print(new_file_name+"y_position_vs_time.png")
         plot1_path = os.path.join(new_plots_directory_path, "y_position_vs_time.png")
         plt.savefig(plot1_path)
         plt.close()
 
+        fig = go.Figure()
 
-    # For the energy stored in springs, assuming spring constant k=1 for simplicity
+        # Adding the line plot
+        fig.add_trace(go.Scatter(x=df['Time'], y=height, mode='lines+markers', name='Y-Position of the Center of Mass Over Time',
+                                line=dict(color='red'), hoverinfo='x+y'))
+
+        # Customizing the layout
+        fig.update_layout(
+            title='Y-Position of the Center of Mass Over Time',
+            xaxis_title='Time',
+            yaxis_title='Y-Position of Center of Mass',
+            legend_title="Legend"
+        )
+
+        #you can save the plot to HTML if needed (uncomment the line below)
+        plot1_path=os.path.join(new_plots_directory_path,"y_position_vs_time.html")
+        
+        fig.write_html(plot1_path)
+
+    # For the energy stored in springs, assuming spring constant k
 
     if(TotEneStor):
         energy_stored = np.zeros(len(df))
@@ -139,9 +162,9 @@ for file_name in all_files:
 
             extension[extension < 0] = 0  # Only consider extension, not compression
 
-            energy_stored += 0.5 * (extension*0.1 ** 2)  # Assuming k=1, extension in dm 
+            energy_stored += 0.5 * (extension*0.1 ** 2)*k  # Assuming k=1, extension in dm 
 
-        # Plot the energy stored in springs over time
+        #Plot the energy stored in springs over time
         plt.figure(figsize=(14, 7))
         plt.plot(df['Time'], energy_stored, label='Energy Stored in Springs', color='red')
         plt.xlabel('Time')
@@ -151,6 +174,25 @@ for file_name in all_files:
         plot2_path = os.path.join(new_plots_directory_path,"Energy_Stored_in_Springs_Over_Time.png")
         plt.savefig(plot2_path)
         plt.close()
+        
+        fig = go.Figure()
+
+        # Adding the line plot
+        fig.add_trace(go.Scatter(x=df['Time'], y=energy_stored, mode='lines+markers', name='Energy Stored in Springs',
+                                line=dict(color='red'), hoverinfo='x+y'))
+
+        # Customizing the layout
+        fig.update_layout(
+            title='Energy Stored in Springs Over Time',
+            xaxis_title='Time',
+            yaxis_title='Energy Stored in Springs',
+            legend_title="Legend"
+        )
+
+        #you can save the plot to HTML if needed (uncomment the line below)
+        plot2_path=os.path.join(new_plots_directory_path,"Energy_Stored_in_Springs_Over_Time.html")
+        
+        fig.write_html(plot2_path)
 
 
     #spring extension rates
@@ -188,7 +230,7 @@ for file_name in all_files:
         for spring in range(1, total_spring_columns + 1):
             extension = df[f'Spring{spring}_CurrentLength'] - df[f'Spring{spring}_RestLength']
             extension[extension < 0] = 0  # Ignora la compressione
-            energy = 0.5 * (extension *0.1** 2)  # E = 1/2 kx^2, assumendo k=1
+            energy = 0.5 * (extension *0.1** 2)*k  # E = 1/2 kx^2, assumendo k
             energies.append(energy)
 
         # Convertire l'elenco delle energie in un DataFrame per facilitare il plot
@@ -211,7 +253,7 @@ for file_name in all_files:
         plt.savefig(plot_path4)
         plt.close()
     
-
+    
     #actuated cable tension
     if(actuator_tension_plotter):
         plt.figure(figsize=(14, 7))
@@ -249,9 +291,27 @@ for file_name in all_files:
     plt.close()
     
 
+    # Initialize a list to hold work calculations for each cable
+    
+    work_done = []
+    tot_work=0
+    for cable in range(1, num_actuated_cables + 1):
+        # Get tension and current length data
+        tensions = df[f'ActuatedCable{cable}_Tension'].values
+        lengths = df[f'ActuatedCable{cable}_CurrentLength'].values
 
+        # Calculate the work done using the trapezoidal rule
+        work = np.trapz(tensions, x=lengths)  # `x` denotes the values of length over which tension is applied
+        work=work*0.01
+        # Store the calculated work
+        work_done.append(work)
+        
+        tot_work=np.sum(work_done)
+        print(f"Work done by Actuated Cable {cable} in sim{file_counter}: {work:.2f} units")
+    print("tot work is:",tot_work)
     # Incrementare il contatore per il prossimo file
     file_counter += 1
+    
 
 print(f"Processo completato per {file_counter - 1} file.")
 

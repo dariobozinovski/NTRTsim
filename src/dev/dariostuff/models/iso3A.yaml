@@ -1,7 +1,9 @@
 pair_groups:
-  activated_cable:
-    - [strut1n1, strut2n2]
+  activated_cable c1:    
+    - [strut1n1, strut2n2]  
+  activated_cable c2:    
     - [strut5n2, strut6n1]
+  activated_cable c3:      
     - [strut4n1, strut3n2]
   prism_rod:
     - [strut1n1, strut1n2]
@@ -50,22 +52,22 @@ nodes:
   strut2n1: [0, 0, -1.545]
   strut1n1: [0, 0, 1.545]
   strut4n2: [1.545, 2.5, -2.5]
-  centro:   []
+  
 builders:
   activated_cable:
     class: tgBasicActuatorInfo
     parameters:
-      stiffness: 20000
-      max_tension: 400.0
-      damping: 200
+      stiffness: 200000
+      max_tension: 500.0
+      damping: 0.01
       pretension: 0
   prism_rod:
     parameters:
       restitution: 0.0
-      friction: 0.0
+      friction: 0.5
       density: 1.7683
       radius: 0.06
-      roll_friction: 0.011
+      roll_friction: 0.001
     class: tgRodInfo
   springs:
     class: tgBasicActuatorInfo
@@ -73,4 +75,4 @@ builders:
       max_tension: 70000
       stiffness: 400
       pretension: 100
-      damping: 20
+      damping: 1

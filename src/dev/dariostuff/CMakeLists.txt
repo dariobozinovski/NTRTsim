@@ -1,17 +1,6 @@
-link_directories(${LIB_DIR})
+Project(dariostuff)
 
-link_libraries(tgcreator
-                util
-                sensors
-                core    
-                terrain 
-                tgOpenGLSupport
-        yaml-cpp
-		TensegrityModel)
-
-add_executable(AppisocDarYAML
-    AppisocDarYAML.cpp
-    LengthControllerdarYAML.cpp
-    
-) 
-
+subdirs(
+	streight_jump
+    directional_jump
+    )
