@@ -97,7 +97,7 @@ void LengthControllerYAML::initializeActuators(TensegrityModel& subject,
   std::cout << "The following cables were found and will be controlled: "
 	    << std::endl;
   //Iterate through array and output strings to command line
-  for (std::size_t i = 0; i < foundActuators.size()-1; i ++) {	
+  for (std::size_t i = 0; i < foundActuators.size(); i ++) {	
     std::cout << foundActuators[i]->getTags() << std::endl;
     // Also, add the rest length of the actuator at this time
     // to the list of all initial rest lengths.
@@ -148,10 +148,17 @@ void LengthControllerYAML::onStep(TensegrityModel& subject, double dt)
     // otherwise adjust its length according to m_rate and dt.
     for (std::size_t i = 0; i < cablesWithTags.size(); i ++) {	
       double currRestLength = cablesWithTags[i]->getRestLength();
+      double correction=0.0;
       // Calculate the minimum rest length for this cable.
       // Remember that m_minLength is a percent.
-      double minRestLength = initialRL[cablesWithTags[i]->getTags()] * m_minLength;
+       if(i==0){
+         correction=0.05;
+      //   //DEBUGGING
+	      
+       }
+      double minRestLength = initialRL[cablesWithTags[i]->getTags()] * (m_minLength+correction);
       // If the current rest length is still greater than the minimum,
+      
       if( currRestLength > minRestLength ) {
 	      // output a progress bar for the controller, to track when control occurs.
 	      //std::cout << "." << i;
@@ -160,8 +167,7 @@ void LengthControllerYAML::onStep(TensegrityModel& subject, double dt)
 	      double nextRestLength = currRestLength - m_rate * dt;
         
         
-	    //DEBUGGING
-	    //std::cout << "Next Rest Length: " << nextRestLength << std::endl;
+	    
 	    cablesWithTags[i]->setControlInput(nextRestLength,dt);
       }
     }   
@@ -170,13 +176,15 @@ void LengthControllerYAML::onStep(TensegrityModel& subject, double dt)
    if( m_timePassed > m_jumpTime) {
     
     Ijumped = 1;
+    bool delay= 0.0000;
     //for eache cable remove tension
     for (std::size_t i = 0; i < cablesWithTags.size(); i ++) {	
-      
-      double currRestLength = cablesWithTags[i]->getRestLength();
-      //std::cout<<"prima: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<" ";
-      cablesWithTags[i]->setControlInput(initialRL[cablesWithTags[i]->getTags()],dt); 
-      //std::cout<<"dopo: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<"\n";
+      if(m_timePassed > m_jumpTime+delay ||i!=0){
+        double currRestLength = cablesWithTags[i]->getRestLength();
+        //std::cout<<"prima: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<" ";
+        cablesWithTags[i]->setControlInput(initialRL[cablesWithTags[i]->getTags()],dt); 
+        //std::cout<<"dopo: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<"\n";
+      }
     } 
     
     

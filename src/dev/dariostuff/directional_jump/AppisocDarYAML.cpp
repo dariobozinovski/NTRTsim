@@ -126,8 +126,8 @@ int main(int argc, char** argv)
     // repeated here:
     double startTime = 2.0;
     double minLength = 0.557;
-    double rate = 0.1;
-    double jumpTime = 35;
+    double rate = 0.5;
+    double jumpTime = 15;
     std::vector<std::string> tagsToControl;
     // See the threeBarModel.YAML file to see where "vertical_string" is used.
     tagsToControl.push_back("activated_cable");
@@ -194,8 +194,16 @@ int main(int argc, char** argv)
 //salvare tutto su git -fatto
 //salvare simulazioni su git -fatto
 //trovare l'errore nelle simulazioni con dati realistici forse la alta tensione porta a microvibrazioni che spostano il corpo -ora funziona non so perche cambiato hardware
-//colorare le molle o numerarle nella simulazione per identificarle
 //riominciare da capo con modello semplice:
 //centrl actuated 3 A fare analisi e farla bene e analizzare i dati capire percentuale di energia in salto e quanta invece persa 
 // abbasasre rate di compressione e creare grafico di tensione attuatore per vedere come si distribuisce lo stress durante la copressione
+//different approaches to directional jumping form full compressed state (late realese, less compression)
+
+//directional jumping is more complicated that it seams
+//approach make struts longer then nodes to avoid rods going under other rods
+
+
+
+//colorare le molle o numerarle nella simulazione per identificarle
+
 //
