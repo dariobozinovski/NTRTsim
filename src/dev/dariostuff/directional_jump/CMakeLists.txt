@@ -9,9 +9,9 @@ link_libraries(tgcreator
         yaml-cpp
 		TensegrityModel)
 
-add_executable(AppisocDarYAMLdirectional
-    AppisocDarYAML.cpp
-    LengthControllerdarYAML.cpp
+add_executable(AppisocDarYAMLdir
+    AppisocDarYAMLdir.cpp
+    LengthControllerdarYAMLdir.cpp
     
 ) 
 

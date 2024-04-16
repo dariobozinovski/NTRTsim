@@ -1,0 +1,117 @@
+pair_groups:
+  activated_cable c1:    
+    - [strut1n1, strut2n2]  
+  activated_cable c2:    
+    - [strut5n2, strut6n1]
+  activated_cable c3:      
+    - [strut4n1, strut3n2]
+  prism_rod:
+    - [strut1n1, strut1n2]
+    - [strut2n1, strut2n2]
+    - [strut3n1, strut3n2]
+    - [strut4n1, strut4n2]
+    - [strut5n1, strut5n2]
+    - [strut6n1, strut6n2]
+  extensions:
+    - [strut1n1,ext1n1]
+    - [strut1n2,ext1n2]
+    - [strut2n1,ext2n1]
+    - [strut2n2,ext2n2]
+    - [strut3n1,ext3n1]
+    - [strut3n2,ext3n2]
+    - [strut4n1,ext4n1]
+    - [strut4n2,ext4n2]
+    - [strut5n1,ext5n1]
+    - [strut5n2,ext5n2]
+    - [strut6n1,ext6n1]
+    - [strut6n2,ext6n2]
+    
+  springs:
+    - [strut1n1, strut5n2]
+    - [strut1n1, strut4n1]
+    - [strut5n2, strut4n1]
+    - [strut1n1, strut3n1]
+    - [strut1n1, strut5n1]
+    - [strut3n1, strut5n1]
+    - [strut2n1, strut5n2]
+    - [strut2n1, strut4n2]
+    - [strut5n2, strut4n2]
+    - [strut2n1, strut3n2]
+    - [strut2n1, strut5n1]
+    - [strut3n2, strut5n1]
+    - [strut4n1, strut6n2]
+    - [strut4n1, strut1n2]
+    - [strut6n2, strut1n2]
+    - [strut6n2, strut4n2]
+    - [strut6n2, strut2n2]
+    - [strut4n2, strut2n2]
+    - [strut2n2, strut6n1]
+    - [strut2n2, strut3n2]
+    - [strut6n1, strut3n2]
+    - [strut3n1, strut6n1]
+    - [strut3n1, strut1n2]
+    - [strut6n1, strut1n2]
+nodes:
+  strut1n1: [0, 0, 1.545]
+  strut1n2: [0, 5, 1.545]
+  strut2n1: [0, 0, -1.545]
+  strut2n2: [0, 5, -1.545]
+  strut3n1: [-1.545, 2.5, 2.5]
+  strut3n2: [-1.545, 2.5, -2.5]
+  strut4n1: [1.545, 2.5, 2.5]
+  strut4n2: [1.545, 2.5, -2.5]
+  strut5n1: [-2.5, 0.955, 0]
+  strut5n2: [2.5, 0.955, 0]
+  strut6n1: [-2.5, 4.045, 0]
+  strut6n2: [2.5, 4.045, 0]
+  centro1_11_6: [0, 2.5, 0]
+  
+  
+  
+  
+  
+
+  ext1n1: [0, -0.2, 1.545]
+  ext1n2: [0, 5.2, 1.545]
+  ext2n1: [0, -0.2, -1.545]
+  ext2n2: [0, 5.2, -1.545]
+  ext3n1: [-1.545, 2.5, 2.7]
+  ext3n2: [-1.545, 2.5, -2.7]
+  ext4n1: [1.545, 2.5, 2.7]
+  ext4n2: [1.545, 2.5, -2.7]
+  ext5n1: [-2.7, 0.955, 0]
+  ext5n2: [2.7, 0.955, 0]
+  ext6n1: [-2.7, 4.045, 0]
+  ext6n2: [2.7, 4.045, 0]
+  
+builders:
+  activated_cable:
+    class: tgBasicActuatorInfo
+    parameters:
+      stiffness: 200000
+      max_tension: 550.0
+      damping: 0.01
+      pretension: 0
+  prism_rod:
+    parameters:
+      restitution: 0.0
+      friction: 0.5
+      density: 1.7683
+      radius: 0.06
+      roll_friction: 0.001
+    class: tgRodInfo
+  extensions:
+    parameters:
+      restitution: 0.0
+      friction: 0.5
+      density: 1.7683
+      radius: 0.06
+      roll_friction: 0.001
+    class: tgRodInfo
+  springs:
+    class: tgBasicActuatorInfo
+    parameters:
+      max_tension: 70000
+      stiffness: 400
+      pretension: 100
+      damping: 1

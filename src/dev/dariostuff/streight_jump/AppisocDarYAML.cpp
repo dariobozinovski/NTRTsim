@@ -125,9 +125,9 @@ int main(int argc, char** argv)
     // Parameters for the LengthControllerYAML are specified in that .h file,
     // repeated here:
     double startTime = 2.0;
-    double minLength = 0.557;
-    double rate = 0.5;
-    double jumpTime = 20;
+    double minLength = 0.1;
+    double rate = 0.1;
+    double jumpTime = 35;
 
     std::vector<std::string> tagsToControl;
     // See the threeBarModel.YAML file to see where "vertical_string" is used.

@@ -32,3 +32,28 @@ git push fork nome name-of-branch
 to create new branch
 
 git checkout -b name-branch
+
+
+
+
+to do:
+/provare altre forme -non credo che faro
+//fare README per le analisi -fatto
+//salvare tutto su git -fatto
+//salvare simulazioni su git -fatto
+//trovare l'errore nelle simulazioni con dati realistici forse la alta tensione porta a microvibrazioni che spostano il corpo -ora funziona non so perche cambiato hardware
+//riominciare da capo con modello semplice:
+//centrl actuated 3 A fare analisi e farla bene e analizzare i dati capire percentuale di energia in salto e quanta invece persa 
+// abbasasre rate di compressione e creare grafico di tensione attuatore per vedere come si distribuisce lo stress durante la copressione
+//different approaches to directional jumping form full compressed state (late realese, less compression)
+
+//directional jumping is more complicated that it seams
+//approach make struts longer then nodes to avoid rods going under other rods
+
+
+
+//colorare le molle o numerarle nella simulazione per identificarle
+convertire tutto per fare simulazionio piu facilmente
+plottare elongation a forza
+aggiungere massa e vedere se e possibile 
+//creare palla in mezzo e attuatore veso la palla perche la simulazione non ha senso

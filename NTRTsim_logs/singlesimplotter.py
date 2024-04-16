@@ -11,7 +11,13 @@ import plotly.graph_objects as go
 num_rods = 6
 data_per_rod = 7  # XYZ position, Euler angles, mass
 data_per_spring = 3  # RestLength, CurrentLength, Tension
-num_actuated_cables = 4  # The same data format as springs
+num_actuated_cables = 3  # The same data format as springs
+extension=1
+num_comp=0
+num_ext=0
+if(extension):
+    num_comp=num_rods
+    num_ext=num_rods*2
 
 #physical parameters
 k=300
@@ -77,17 +83,27 @@ for file_name in all_files:
     # Total columns per rod and spring
     total_rod_columns = num_rods * data_per_rod
     total_actuateted_columns=num_actuated_cables*data_per_spring
-    total_spring_columns = (len(df.columns)- total_rod_columns-total_actuateted_columns-1)//data_per_spring
+    total_compound_columns=data_per_rod*num_comp
+    total_extension_columns=data_per_rod*num_ext
+    total_spring_columns = (len(df.columns)- total_rod_columns-total_actuateted_columns-total_compound_columns-total_extension_columns-1)//data_per_spring
     
     column_names = ['Time']
-
+    for compound in range(1, num_comp +1):
+        
+        column_names += [f'Comp{compound}_X', f'Comp{compound}_Y', f'Comp{compound}_Z', f'RCompod{compound}_EulerX', f'Comp{compound}_EulerY', f'Comp{compound}_EulerZ',f'Comp{compound}_mass']
+    
     for rod in range(1, num_rods + 1):
-
+    
         column_names += [f'Rod{rod}_X', f'Rod{rod}_Y', f'Rod{rod}_Z', f'Rod{rod}_EulerX', f'Rod{rod}_EulerY', f'Rod{rod}_EulerZ',f'Rod{rod}_mass']
-
+    
+    for ext in range(1,num_ext+1):
+    
+        column_names += [f'ext{ext}_X', f'ext{ext}_Y', f'ext{ext}_Z', f'ext{ext}_EulerX', f'ext{ext}_EulerY', f'ext{ext}_EulerZ',f'ext{ext}_mass']
+    
     for cable in range(1, num_actuated_cables + 1):
-
+    
         column_names += [f'ActuatedCable{cable}_RestLength', f'ActuatedCable{cable}_CurrentLength', f'ActuatedCable{cable}_Tension']
+    
     for spring in range(1, total_spring_columns + 1):
 
         column_names += [f'Spring{spring}_RestLength', f'Spring{spring}_CurrentLength', f'Spring{spring}_Tension']
@@ -100,9 +116,9 @@ for file_name in all_files:
     df = pd.read_csv(new_file_path, skiprows=2, names=column_names)
 
     df=df.drop(columns=['to_delete'])
-
+    
     #remove first to seconds
-    df=df.iloc[100:].reset_index(drop=True)
+    #df=df.iloc[100:].reset_index(drop=True)
     # Display the maximum value in the time column
     
 
@@ -314,7 +330,7 @@ for file_name in all_files:
     
 
 print(f"Processo completato per {file_counter - 1} file.")
-
+df.to_csv(new_file_path, index=False)
 
 
 
