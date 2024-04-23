@@ -90,6 +90,20 @@ int main(int argc, char** argv)
       throw std::invalid_argument("No arguments passed in to the application. You need to specify which YAML file you wouldd like to build.");
     }
   
+    // fill varibles startTime, minLenght, rate, jumpTime trough argv[2], argv[3], argv[4], argv[5]
+    // Parse additional command-line arguments
+    double startTime = std::stod(argv[2]);
+    double minLength = std::stod(argv[3]);
+    double rate = std::stod(argv[4]);
+    double jumpTime = std::stod(argv[5]);
+    bool datalogger = std::stod(argv[6]);
+
+    // Output parsed variables for confirmation
+    std::cout << "Start Time: " << startTime << std::endl;
+    std::cout << "Minimum Length: " << minLength << std::endl;
+    std::cout << "Rate: " << rate << std::endl;
+    std::cout << "Jump Time: " << jumpTime << std::endl;
+  
     // create the ground and world. Specify ground rotation in radians
     const double yaw = 0.0;
     const double pitch = 0.0;
@@ -124,10 +138,10 @@ int main(int argc, char** argv)
 
     // Parameters for the LengthControllerYAML are specified in that .h file,
     // repeated here:
-    double startTime = 2.0;
-    double minLength = 0.1;
-    double rate = 0.1;
-    double jumpTime = 35;
+    // double startTime = 2.0;
+    // double minLength = 0.5;
+    // double rate = 0.1;
+    // double jumpTime = 35;
 
     std::vector<std::string> tagsToControl;
     // See the threeBarModel.YAML file to see where "vertical_string" is used.
@@ -143,7 +157,7 @@ int main(int argc, char** argv)
     simulation.addModel(myModel);
     
     //data logger
-    bool datalogger=0;
+    
     if(datalogger){
       // Add sensors using the new sensing framework
       // A string prefix for the filename
@@ -173,7 +187,7 @@ int main(int argc, char** argv)
       }
 
     int nEpisodes = 1; // Number of episodes ("trial runs")
-    int nSteps = 100000; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
+    int nSteps = 30/timestep_physics;; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
     for (int i=0; i<nEpisodes; i++) {
       if (i > 0) { // Reset only for subsequent runs
         myController->nextStep(); // Reset the controller state

@@ -72,7 +72,7 @@ LengthControllerYAML::LengthControllerYAML(double startTime,
     throw std::invalid_argument("minLength is a percent, must be greater than 0.");
   }
   // rate must be greater than zero
-  else if( rate < 0.0 ) {
+  else if( m_rate < 0.0 ) {
     throw std::invalid_argument("Rate cannot be negative.");
   }
   if( m_jumpTime < m_startTime &&m_jumpTime==0) {

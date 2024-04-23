@@ -7,30 +7,36 @@ from itertools import cycle
 from shutil import rmtree
 import plotly.express as px
 import plotly.graph_objects as go
+
 # Constants based on the structure described
 num_rods = 6
 data_per_rod = 7  # XYZ position, Euler angles, mass
 data_per_spring = 3  # RestLength, CurrentLength, Tension
 num_actuated_cables = 3  # The same data format as springs
-extension=1
+extension=0
 num_comp=0
 num_ext=0
-if(extension):
-    num_comp=num_rods
-    num_ext=num_rods*2
+
 
 #physical parameters
 k=300
 
 #which graph do I want
-CMtoHeight=1
-TotEneStor=1
-springStackPlot=1
-extensionRate=1
-actuator_tension_plotter=1
-
+CMtoHeight=0
+TotEneStor=0
+springStackPlot=0
+extensionRate=0
+actuator_tension_plotter=0
+springTension=0
+actuators_tension=0
+forceoverextension=1
 #num_rods*data_per_rod+
 # Definire i percorsi delle directory
+
+if(extension):
+    num_comp=num_rods
+    num_ext=num_rods*2
+
 directory_path = "/home/ubuntu/NTRTsim/NTRTsim_logs/to_plot"
 directory_path_save = "/home/ubuntu/NTRTsim/NTRTsim_logs/plots"
 
@@ -134,15 +140,16 @@ for file_name in all_files:
         height=np.zeros(len(df))
         for rod in range(1, num_rods + 1):
             
-            height+=df[f'Rod{rod}_Y']/num_rods
+            height+=df[f'Rod{rod}_Y']*0.1/num_rods
             
         plt.plot(df['Time'], height, label='CM Y-Position')
+        plt.grid()
+        plt.xlabel('Time (s)', fontsize=16)
+        plt.xticks(fontsize=15)  
+        plt.yticks(fontsize=15) 
+        plt.ylabel('Y-Position of Center of  m', fontsize=16)
 
-        plt.xlabel('Time')
-
-        plt.ylabel('Y-Position of Center of Mass')
-
-        plt.title('Y-Position of the Center of Mass Over Time')
+        plt.title('Y-Position of the Center of Mass Over Time', fontsize=24)
         print(new_file_name+"y_position_vs_time.png")
         plot1_path = os.path.join(new_plots_directory_path, "y_position_vs_time.png")
         plt.savefig(plot1_path)
@@ -183,9 +190,10 @@ for file_name in all_files:
         #Plot the energy stored in springs over time
         plt.figure(figsize=(14, 7))
         plt.plot(df['Time'], energy_stored, label='Energy Stored in Springs', color='red')
-        plt.xlabel('Time')
-        plt.ylabel('Energy Stored in Springs')
-        plt.title('Energy Stored in Springs Over Time')
+        plt.xlabel('Time (s)',fontsize=16)
+        plt.ylabel('Energy Stored in Springs (J)',fontsize=16)
+        plt.title('Energy Stored in Springs Over Time',fontsize=24)
+        plt.grid()
         plt.legend()
         plot2_path = os.path.join(new_plots_directory_path,"Energy_Stored_in_Springs_Over_Time.png")
         plt.savefig(plot2_path)
@@ -223,10 +231,13 @@ for file_name in all_files:
             extension = df[f'Spring{spring}_CurrentLength'] / df[f'Spring{spring}_RestLength']
             plt.plot(df['Time'], extension, linestyle=style, color=color, alpha=0.7, label=f'Spring {spring}')  # Use of transparency
 
-        plt.title('Spring Extension/Compression Rate Over Time')
-        plt.xlabel('Time')
-        plt.ylabel('Springs Extension/Compression Rate')
-
+        plt.title('Spring Extension/Compression Rate Over Time',fontsize=24)
+        plt.xlabel('Time (s)',fontsize=20)
+        plt.ylabel('Springs Extension/Compression Rate (Current Length/Rest Length)',fontsize=20)
+        plt.grid()
+        plt.xticks(fontsize=15)  
+        plt.yticks(fontsize=15) 
+        plt.legend(fontsize=15) 
         # Enhance the legend
         leg = plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
         for legobj in leg.legend_handles:
@@ -258,8 +269,9 @@ for file_name in all_files:
         plt.figure(figsize=(14, 7))
         plt.stackplot(df['Time'], energy_df.T, labels=energy_df.columns, alpha=0.8)
         plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
-        plt.xlabel('Time')
-        plt.ylabel('Energy Stored in Each Spring')
+        plt.grid()
+        plt.xlabel('Time (s)')
+        plt.ylabel('Energy Stored in Each Spring (J)')
         plt.title('Energy Stored in Springs Over Time (Stacked Area Plot)')
 
         plt.tight_layout(rect=[0, 0, 0.75, 1])  # Ajuste per fare spazio alla legenda
@@ -276,37 +288,64 @@ for file_name in all_files:
 
         # Plotting tension for each actuated cable
         for cable in range(1, num_actuated_cables + 1):
-            plt.plot(df['Time'], df[f'ActuatedCable{cable}_Tension'], label=f'Actuated Cable {cable} Tension')
+            plt.plot(df['Time'], df[f'ActuatedCable{cable}_Tension']*0.1, label=f'Actuated Cable {cable} Tension')
         
         # Customizing the plot
-        plt.xlabel('Time')
-        plt.ylabel('Tension')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Tension (N)')
         plt.title('Tension in Actuated Cables Over Time')
         plt.legend()
+        plt.grid()
 
         # Save the plot
         plot_path = os.path.join(new_plots_directory_path, "actuated_cable_tensions_vs_time.png")
         plt.savefig(plot_path)
         plt.close()
+    if(actuators_tension):
+        plt.figure(figsize=(14, 7))
 
-    plt.figure(figsize=(14, 7))
+        # Plotting tension for each actuated cable
+        for cable in range(1, num_actuated_cables + 1):
+            plt.plot(df['Time'], df[f'ActuatedCable{cable}_RestLength']*0.1, label=f'Actuated Cable {cable} RestLength (m)')
+            plt.plot(df['Time'], df[f'ActuatedCable{cable}_CurrentLength']/df[f'ActuatedCable{cable}_RestLength'], label=f'Actuated Cable {cable} actualLength over restlenght ')
+        # Customizing the plot
+        plt.xlabel('Time')
+        plt.ylabel('restlenght')
+        plt.title('Restlenght in Actuated Cables Over Time')
+        plt.legend()
+        plt.grid()
 
-    # Plotting tension for each actuated cable
-    for cable in range(1, num_actuated_cables + 1):
-        plt.plot(df['Time'], df[f'ActuatedCable{cable}_RestLength'], label=f'Actuated Cable {cable} RestLength')
-        plt.plot(df['Time'], df[f'ActuatedCable{cable}_CurrentLength']/df[f'ActuatedCable{cable}_RestLength'], label=f'Actuated Cable {cable} actualLength over restlenght ')
-    # Customizing the plot
-    plt.xlabel('Time')
-    plt.ylabel('restlenght')
-    plt.title('restlenght in Actuated Cables Over Time')
-    plt.legend()
-
-    # Save the plot
-    plot_path = os.path.join(new_plots_directory_path, "actuated_cable_restlenght_vs_time.png")
-    plt.savefig(plot_path)
-    plt.close()
+        # Save the plot
+        plot_path = os.path.join(new_plots_directory_path, "actuated_cable_restlenght_vs_time.png")
+        plt.savefig(plot_path)
+        plt.close()
     
+    if(springTension):
+        tensions = []
+        for spring in range(1, total_spring_columns + 1):
+            Tension = df[f'Spring{spring}_Tension']
+            tensions.append(Tension)
 
+        # Convertire l'elenco delle energie in un DataFrame per facilitare il plot
+        Tensions_df = pd.DataFrame(tensions).T
+        # Rinominare le colonne per chiarezza
+        Tensions_df.columns = [f'Spring {i+1} Tension' for i in range(total_spring_columns)]
+
+        # Creare il grafico area in pila
+        plt.figure(figsize=(14, 7))
+        plt.stackplot(df['Time'], Tensions_df.T, labels=Tensions_df.columns, alpha=0.8)
+        plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+        plt.xlabel('Time')
+        plt.ylabel('Tension in Each Spring')
+        plt.title('Tension in Springs Over Time (Stacked Area Plot)')
+        plt.grid()
+
+        plt.tight_layout(rect=[0, 0, 0.75, 1])  # Ajuste per fare spazio alla legenda
+
+        # Salvare il grafico
+        plot_path5 = os.path.join(new_plots_directory_path,"Tensionssprings.png")
+        plt.savefig(plot_path5)
+        plt.close()
     # Initialize a list to hold work calculations for each cable
     
     work_done = []
@@ -325,9 +364,35 @@ for file_name in all_files:
         tot_work=np.sum(work_done)
         print(f"Work done by Actuated Cable {cable} in sim{file_counter}: {work:.2f} units")
     print("tot work is:",tot_work)
+    
+    #plotting force over extension during compression
+    if(forceoverextension):
+
+        plt.figure(figsize=(14, 7))
+        #first value of the rest lengths of actuated cables
+        Rest_Lengths_init =[df[f'ActuatedCable{cable}_RestLength'].values[0] for cable in range(1, num_actuated_cables + 1)]
+        
+        for cable in range(1, num_actuated_cables + 1):
+            
+            
+            plt.plot((df[f'ActuatedCable{cable}_CurrentLength']-Rest_Lengths_init[cable-1])*0.1,df[f'ActuatedCable{cable}_Tension']*0.1, label=f'Tension vs Extension {cable}')
+        
+        plt.grid()
+        plt.xlabel('extension in m', fontsize=16)
+        plt.xticks(fontsize=15)  
+        plt.yticks(fontsize=15) 
+        plt.ylabel('Force in atuator in N', fontsize=16)
+
+        plt.title('force over extenasion of actuated cables', fontsize=24)
+        print(new_file_name+"force_over_extension.png")
+        plot1_path = os.path.join(new_plots_directory_path, "force_over_extension.png")
+        plt.savefig(plot1_path)
+        plt.close()
+
     # Incrementare il contatore per il prossimo file
     file_counter += 1
     
+
 
 print(f"Processo completato per {file_counter - 1} file.")
 df.to_csv(new_file_path, index=False)

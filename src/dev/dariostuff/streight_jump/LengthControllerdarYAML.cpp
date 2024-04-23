@@ -135,53 +135,55 @@ void LengthControllerYAML::onSetup(TensegrityModel& subject)
   std::cout << "Finished setting up the controller." << std::endl;    
 }
 
-void LengthControllerYAML::onStep(TensegrityModel& subject, double dt)
+void LengthControllerYAMLmanual::handleConsoleInput(double dt)
 {
-  // First, increment the accumulator variable.
-  m_timePassed += dt;
-  
-  // Then, if it's passed the time to start the controller,
-  if( m_timePassed > m_startTime&&!Ijumped) {
-    //count number of steps
-    
-    // For each cable, check if its rest length is past the minimum,
-    // otherwise adjust its length according to m_rate and dt.
-    for (std::size_t i = 0; i < cablesWithTags.size(); i ++) {	
-      double currRestLength = cablesWithTags[i]->getRestLength();
-      // Calculate the minimum rest length for this cable.
-      // Remember that m_minLength is a percent.
-      double minRestLength = initialRL[cablesWithTags[i]->getTags()] * m_minLength;
-      // If the current rest length is still greater than the minimum,
-      if( currRestLength > minRestLength ) {
-	      // output a progress bar for the controller, to track when control occurs.
-	      //std::cout << "." << i;
-	      // Then, adjust the rest length of the actuator itself, according to
-	      // m_rate and dt.
-	      double nextRestLength = currRestLength - m_rate * dt;
-        
-        
-	    //DEBUGGING
-	    //std::cout << "Next Rest Length: " << nextRestLength << std::endl;
-	    cablesWithTags[i]->setControlInput(nextRestLength,dt);
-      }
-    }   
-  }
-   //id time passed release all tension
-   if( m_timePassed > m_jumpTime) {
-    
-    Ijumped = 1;
-    //for eache cable remove tension
-    for (std::size_t i = 0; i < cablesWithTags.size(); i ++) {	
-      
-      double currRestLength = cablesWithTags[i]->getRestLength();
-      //std::cout<<"prima: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<" ";
-      cablesWithTags[i]->setControlInput(initialRL[cablesWithTags[i]->getTags()],dt); 
-      //std::cout<<"dopo: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<"\n";
-    } 
-    
-    
-  }
-  //std::cout<<initialRL[cablesWithTags[0]->getTags()]<<" "<<cablesWithTags[0]->getRestLength()<<" "<<m_timePassed<<"\n";
+    setNonBlockingInput();
+
+    char input[256]; // Buffer to hold input
+    if (read(STDIN_FILENO, input, 255) > 0) {
+        input[255] = '\0'; // Ensure null termination
+
+        std::istringstream iss(input);
+        int cableIndex;
+        double newLengthPercent;
+
+        iss >> cableIndex;
+        if (iss.fail()) {
+            std::cerr << "Invalid input" << std::endl;
+            restoreInput();
+            return;
+        }
+
+        if (input[0] == 'j') { // Checking the first character for 'j'
+            resetAllActuatorsToInitial(dt);
+            restoreInput();
+            return;
+        }
+
+        iss >> newLengthPercent;
+        if (newLengthPercent < 0 || newLengthPercent > 1) {
+            std::cerr << "Length percentage must be between 0 and 1." << std::endl;
+            restoreInput();
+            return;
+        }
+
+        // Adjust all cables if index is 0
+        if (cableIndex == 0) {
+            for (auto& cable : cablesWithTags) {
+                double initialLength = initialRL[cable->getTags()];
+                finalRestLength[cable] = initialLength * newLengthPercent;
+            }
+        } else if (cableIndex > 0 && cableIndex <= (int)cablesWithTags.size()) {
+            // Adjust specified cable
+            tgBasicActuator* selectedCable = cablesWithTags[cableIndex - 1];
+            double initialLength = initialRL[selectedCable->getTags()];
+            finalRestLength[selectedCable] = initialLength * newLengthPercent;
+        } else {
+            std::cerr << "Cable index out of range" << std::endl;
+        }
+    }
+
+    restoreInput(); // Restore terminal settings after input handling
 }
 void LengthControllerYAML::reset() {
     m_timePassed = 0.0;

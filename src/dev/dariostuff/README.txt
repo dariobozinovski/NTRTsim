@@ -51,9 +51,17 @@ to do:
 //approach make struts longer then nodes to avoid rods going under other rods
 
 
+//fallingn simulatiom
+//pretension does it change that muchg
+//spring non linearity 
+
+
+
 
 //colorare le molle o numerarle nella simulazione per identificarle
 convertire tutto per fare simulazionio piu facilmente
 plottare elongation a forza
 aggiungere massa e vedere se e possibile 
-//creare palla in mezzo e attuatore veso la palla perche la simulazione non ha senso
+//creare palla in mezzo e attuatore veso la palla perche la simulazione non ha senso collassa in modo strano
+fare prototipo di attuatore a 3 nodi
+succede qualcosa quando le molle sono a restlenght

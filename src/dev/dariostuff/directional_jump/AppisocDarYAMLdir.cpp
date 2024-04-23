@@ -89,6 +89,19 @@ int main(int argc, char** argv)
     {
       throw std::invalid_argument("No arguments passed in to the application. You need to specify which YAML file you wouldd like to build.");
     }
+
+    // fill varibles startTime, minLenght, rate, jumpTime trough argv[2], argv[3], argv[4], argv[5]
+    // Parse additional command-line arguments
+    double startTime = std::stod(argv[2]);
+    double minLength = std::stod(argv[3]);
+    double rate = std::stod(argv[4]);
+    double jumpTime = std::stod(argv[5]);
+
+    // Output parsed variables for confirmation
+    std::cout << "Start Time: " << startTime << std::endl;
+    std::cout << "Minimum Length: " << minLength << std::endl;
+    std::cout << "Rate: " << rate << std::endl;
+    std::cout << "Jump Time: " << jumpTime << std::endl;
   
     // create the ground and world. Specify ground rotation in radians
     const double yaw = 0.0;
@@ -124,10 +137,7 @@ int main(int argc, char** argv)
 
     // Parameters for the LengthControllerYAML are specified in that .h file,
     // repeated here:
-    double startTime = 2.0;
-    double minLength = 0.5;
-    double rate = 0.2;
-    double jumpTime = 25;
+    
 
     std::vector<std::string> tagsToControl;
     // See the threeBarModel.YAML file to see where "vertical_string" is used.
@@ -189,6 +199,7 @@ int main(int argc, char** argv)
     // teardown is handled by delete
     return 0;
 }
+
 
 //provare altre forme -non credo che faro
 //fare README per le analisi -fatto

@@ -1,0 +1,92 @@
+pair_groups:
+  activated_cable c1:    
+    - [strut1n1, strut2n2]  
+  activated_cable c2:    
+    - [strut5n2, strut6n1]
+  activated_cable c3:      
+    - [strut4n1, strut3n2]
+  prism_rod:
+    - [strut1n1, strut1n2]
+    - [strut2n1, strut2n2]
+    - [strut3n1, strut3n2]
+    - [strut4n1, strut4n2]
+    - [strut5n1, strut5n2]
+    - [strut6n1, strut6n2]
+  
+    
+  springs:
+    - [strut1n1, strut5n2]
+    - [strut1n1, strut4n1]
+    - [strut5n2, strut4n1]
+    - [strut1n1, strut3n1]
+    - [strut1n1, strut5n1]
+    - [strut3n1, strut5n1]
+    - [strut2n1, strut5n2]
+    - [strut2n1, strut4n2]
+    - [strut5n2, strut4n2]
+    - [strut2n1, strut3n2]
+    - [strut2n1, strut5n1]
+    - [strut3n2, strut5n1]
+    - [strut4n1, strut6n2]
+    - [strut4n1, strut1n2]
+    - [strut6n2, strut1n2]
+    - [strut6n2, strut4n2]
+    - [strut6n2, strut2n2]
+    - [strut4n2, strut2n2]
+    - [strut2n2, strut6n1]
+    - [strut2n2, strut3n2]
+    - [strut6n1, strut3n2]
+    - [strut3n1, strut6n1]
+    - [strut3n1, strut1n2]
+    - [strut6n1, strut1n2]
+nodes:
+  sphere strut1n1: [0, 0, 1.545]
+  sphere strut1n2: [0, 5, 1.545]
+  sphere strut2n1: [0, 0, -1.545]
+  sphere strut2n2: [0, 5, -1.545]
+  sphere strut3n1: [-1.545, 2.5, 2.5]
+  sphere strut3n2: [-1.545, 2.5, -2.5]
+  sphere strut4n1: [1.545, 2.5, 2.5]
+  sphere strut4n2: [1.545, 2.5, -2.5]
+  sphere strut5n1: [-2.5, 0.955, 0]
+  sphere strut5n2: [2.5, 0.955, 0]
+  sphere strut6n1: [-2.5, 4.045, 0]
+  sphere strut6n2: [2.5, 4.045, 0]
+  centro1_11_6: [0, 2.5, 0]
+
+builders:
+  activated_cable:
+    class: tgBasicActuatorInfo
+    parameters:
+      stiffness: 200000
+      max_tension: 550.0
+      damping: 0.01
+      pretension: 0
+  prism_rod:
+    parameters:
+      restitution: 0.0
+      friction: 0.5
+      density: 1.7683
+      radius: 0.06
+      roll_friction: 0.001
+    class: tgRodInfo
+  extensions:
+    parameters:
+      restitution: 0.0
+      friction: 0.1
+      density: 1.7683
+      radius: 0.06
+      roll_friction: 0.001
+    class: tgRodInfo
+  springs:
+    class: tgBasicActuatorInfo
+    parameters:
+      max_tension: 70000
+      stiffness: 400
+      pretension: 100
+      damping: 1
+  sphere:
+    class: tgSphereInfo
+    parameters:
+      density: 0.05
+      radius: 0.1

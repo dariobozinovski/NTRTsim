@@ -3,10 +3,10 @@
 substructures:
   6BarSphere:
     path: ./iso3Aext.yaml
-    translation: [0,3,0]
+    translation: [0,5,0]
     rotation:
-      axis: [-3,1,1]
-      angle: -225
+      axis: [2,1,1]
+      angle: 60
     
 
     
