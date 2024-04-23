@@ -85,10 +85,10 @@ public:
   virtual void onStep(TensegrityModel& subject, double dt);
 
   void handleConsoleInput(double dt);
-
+  
   void resetAllActuatorsToInitial(double dt);
-  void setNonBlockingInput(); 
   void restoreInput();
+  void setNonBlockingInput();
 protected:
 
   /**

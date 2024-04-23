@@ -131,9 +131,9 @@ void LengthControllerYAMLmanual::onStep(TensegrityModel& subject, double dt)
                 nextRestLength = targetLength;
             }
             //cout cable final and current rest length but for only first cable
-            if(print==1){
-              std::cout << "Cable: " << cable->getTags()<< " Current Rest Length: " << currRestLength << " Target Rest Length: " << targetLength << std::endl;
-            }      
+            
+            std::cout << "Cable: " << cable->getTags()<< " Current Rest Length: " << currRestLength << " Target Rest Length: " << targetLength << std::endl;
+            
             cable->setControlInput(nextRestLength, dt);
         }
     print++;
@@ -142,56 +142,123 @@ void LengthControllerYAMLmanual::onStep(TensegrityModel& subject, double dt)
 
 }
   
+  void LengthControllerYAMLmanual::setNonBlockingInput() {
+    struct termios settings;
+    tcgetattr(STDIN_FILENO, &settings);
+    settings.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+    tcsetattr(STDIN_FILENO, TCSANOW, &settings);
+}
 
+void LengthControllerYAMLmanual::restoreInput() {
+    struct termios settings;
+    tcgetattr(STDIN_FILENO, &settings);
+    settings.c_lflag |= (ICANON | ECHO); // Enable canonical mode and echo
+    tcsetattr(STDIN_FILENO, TCSANOW, &settings);
+}
 
 void LengthControllerYAMLmanual::handleConsoleInput(double dt)
 {
-    std::string input;
-    if (std::getline(std::cin, input)) {
-    
-        std::istringstream iss(input);
-        int cableIndex;
-        double newLengthPercent;
+    setNonBlockingInput();
 
-        iss >> cableIndex;
-        if (iss.fail()) {
-            std::cerr << "Invalid input" << std::endl;
-            return;
-        }
+    fd_set read_fds;
+    FD_ZERO(&read_fds);
+    FD_SET(STDIN_FILENO, &read_fds);
 
-        if (cableIndex == 'j') {
-            resetAllActuatorsToInitial(dt);
-            return;
-        }
+    struct timeval timeout;
+    timeout.tv_sec = 0; // No waiting
+    timeout.tv_usec = 0;
 
-        iss >> newLengthPercent;
-        if (newLengthPercent < 0 || newLengthPercent > 1) {
-            std::cerr << "Length percentage must be between 0 and 1." << std::endl;
-            return;
-        }
+    // Check if there's input to read
+    if (select(STDIN_FILENO + 1, &read_fds, NULL, NULL, &timeout) == 1) {
+        std::string input;
+        std::getline(std::cin, input); // Use getline to read the whole line
 
-        // Adjust all cables if index is 0
-        if (cableIndex == 0) {
-            for (auto& cable : cablesWithTags) {
-                double initialLength = initialRL[cable->getTags()];
-                finalRestLength[cable] = initialLength * newLengthPercent;
-
+        if (!input.empty()) {
+            if (input == "j") {
+                resetAllActuatorsToInitial(dt);
+                restoreInput();
+                return;
             }
-        } else if (cableIndex > 0 && cableIndex <= (int)cablesWithTags.size()) {
-            // Adjust specified cable
-            tgBasicActuator* selectedCable = cablesWithTags[cableIndex - 1];
-            double initialLength = initialRL[selectedCable->getTags()];
-            finalRestLength[selectedCable] = initialLength * newLengthPercent;
-        } else {
-            std::cerr << "Cable index out of range" << std::endl;
+
+            std::istringstream iss(input);
+            int cableIndex;
+            double newLengthPercent;
+
+            iss >> cableIndex;
+            iss >> newLengthPercent;
+
+            if (!iss.fail() && newLengthPercent >= 0 && newLengthPercent <= 1) {
+                if (cableIndex == 0) {
+                    for (auto& cable : cablesWithTags) {
+                        double initialLength = initialRL[cable->getTags()];
+                        finalRestLength[cable] = initialLength * newLengthPercent;
+                    }
+                } else if (cableIndex > 0 && cableIndex <= (int)cablesWithTags.size()) {
+                    tgBasicActuator* selectedCable = cablesWithTags[cableIndex - 1];
+                    double initialLength = initialRL[selectedCable->getTags()];
+                    finalRestLength[selectedCable] = initialLength * newLengthPercent;
+                }
+            } else {
+                std::cerr << "Invalid input or out of range values" << std::endl;
+            }
         }
     }
 }
+// void LengthControllerYAMLmanual::handleConsoleInput(double dt)
+// {
+//     std::string input;
+//     if (std::getline(std::cin, input)) {
+//         std::istringstream iss(input);
+//         int cableIndex;
+//         double newLengthPercent;
+
+//         iss >> cableIndex;
+//         if (iss.fail()) {
+//             std::cerr << "Invalid input" << std::endl;
+//             return;
+//         }
+
+//         if (cableIndex == 'j') {
+//             resetAllActuatorsToInitial(dt);
+//             return;
+//         }
+
+//         iss >> newLengthPercent;
+//         if (newLengthPercent < 0 || newLengthPercent > 1) {
+//             std::cerr << "Length percentage must be between 0 and 1." << std::endl;
+//             return;
+//         }
+
+//         // Adjust all cables if index is 0
+//         if (cableIndex == 0) {
+//             for (auto& cable : cablesWithTags) {
+//                 double initialLength = initialRL[cable->getTags()];
+//                 finalRestLength[cable] = initialLength * newLengthPercent;
+
+//             }
+//         } else if (cableIndex > 0 && cableIndex <= (int)cablesWithTags.size()) {
+//             // Adjust specified cable
+//             tgBasicActuator* selectedCable = cablesWithTags[cableIndex - 1];
+//             double initialLength = initialRL[selectedCable->getTags()];
+//             finalRestLength[selectedCable] = initialLength * newLengthPercent;
+//         } else {
+//             std::cerr << "Cable index out of range" << std::endl;
+//         }
+//     }
+// }
 
 void LengthControllerYAMLmanual::resetAllActuatorsToInitial(double dt)
 {
     for (auto& cable : cablesWithTags) {
-        cable->setControlInput(initialRL[cable->getTags()], dt);
+        finalRestLength[cable]=initialRL[cable->getTags()];
+        //for 100 time steps, set the rest length to the initial rest length
+        for(int i=0; i<1000; i++){
+          cable->setControlInput(initialRL[cable->getTags()], dt);
+          //  DEBUGGING
+          // std::cout << "Cable: " << cable->getTags()<< " Current Rest Length: " << cable->getRestLength() << " Target Rest Length: " << finalRestLength[cable] << std::endl;
+
+        }
+               
     }
 }
 

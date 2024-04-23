@@ -13,22 +13,22 @@ num_rods = 6
 data_per_rod = 7  # XYZ position, Euler angles, mass
 data_per_spring = 3  # RestLength, CurrentLength, Tension
 num_actuated_cables = 3  # The same data format as springs
-extension=0
+extension=1
 num_comp=0
 num_ext=0
 
 
 #physical parameters
-k=300
+k=400
 
 #which graph do I want
-CMtoHeight=0
-TotEneStor=0
-springStackPlot=0
-extensionRate=0
-actuator_tension_plotter=0
-springTension=0
-actuators_tension=0
+CMtoHeight=1
+TotEneStor=1
+springStackPlot=1
+extensionRate=1
+actuator_tension_plotter=1
+springTension=1
+actuators_tension=1
 forceoverextension=1
 #num_rods*data_per_rod+
 # Definire i percorsi delle directory
