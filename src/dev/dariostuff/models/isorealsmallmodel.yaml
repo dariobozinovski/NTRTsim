@@ -1,0 +1,114 @@
+#strut lenght 0.5m, spring lenght 0.30902
+#strut lenght 1.2dm, spring lenght 0.745dm
+nodes:
+  
+  sphere strut1n1: [0, 0,0.3725]
+  sphere strut1n2: [0, 1.2, 0.3725]
+  sphere strut2n1: [0, 0, -0.3725]
+  sphere strut2n2: [0, 1.2, -0.3725]
+  sphere strut3n1: [-0.3725, 0.6, 0.6]
+  sphere strut3n2: [-0.3725, 0.6, -0.6]
+  sphere strut4n1: [0.3725, 0.6, 0.6]
+  sphere strut4n2: [0.3725, 0.6, -0.6]
+  sphere strut5n1: [-0.6, 0.2275, 0]
+  sphere strut5n2: [0.6, 0.2275, 0]
+  sphere strut6n1: [-0.6, 0.9725, 0]
+  sphere strut6n2: [0.6, 0.9725, 0]
+
+  # centro10_7_4: [-0.21817, 0.62267, -0.21817]
+  # centro1_11_6: [0.23, 0.21750, 0.22487]
+  
+  
+
+pair_groups:
+  prism_rod:
+#struts
+    - [strut1n1, strut1n2]
+    - [strut2n1, strut2n2]
+    
+    - [strut3n1, strut3n2]
+    - [strut4n1, strut4n2]
+
+    - [strut5n1, strut5n2]
+    - [strut6n1, strut6n2]
+
+
+  springs:
+#elastic springs
+    - [strut1n1, strut5n2]
+    - [strut1n1, strut4n1]
+    - [strut5n2, strut4n1]
+
+    - [strut1n1, strut3n1]
+    - [strut1n1, strut5n1]
+    - [strut3n1, strut5n1]
+
+    - [strut2n1, strut5n2]
+    - [strut2n1, strut4n2]
+    - [strut5n2, strut4n2]
+
+    - [strut2n1, strut3n2]
+    - [strut2n1, strut5n1]
+    - [strut3n2, strut5n1]
+
+    - [strut4n1, strut6n2]
+    - [strut4n1, strut1n2]
+    - [strut6n2, strut1n2]
+
+    - [strut6n2, strut4n2]
+    - [strut6n2, strut2n2]
+    - [strut4n2, strut2n2]
+
+    - [strut2n2, strut6n1]
+    - [strut2n2, strut3n2]
+    - [strut6n1, strut3n2]
+
+    - [strut3n1, strut6n1]
+    - [strut3n1, strut1n2]
+    - [strut6n1, strut1n2]
+
+   
+  
+  activated_cable c1:
+    - [strut1n1, strut2n2]
+  activated_cable c2:
+    - [strut5n2, strut6n1]
+  activated_cable c3:
+    - [strut4n1, strut3n2]
+
+builders:
+  #density (kg/dm3)wood: 0.9 
+  #for L=5 dm r=0.06dm m=0.1kg then density=1.7683kg/dm^3 
+  prism_rod:
+    class: tgRodInfo
+    parameters:
+      density: 1.131
+      radius: 0.025
+      friction: 0.99
+      roll_friction: 0.011
+      restitution: 0.0
+  springs:
+  #stiffness (N/dm2) rubber_band: 100 / 1000 stiff cable: 200000 
+  #damping (kg/s) rubber_band: 0.01/1
+    class: tgBasicActuatorInfo
+    parameters:
+      stiffness: 59.2
+      damping: 0.1
+      pretension: 12.1
+      max_tension: 70000.0
+  
+  activated_cable:
+    class: tgBasicActuatorInfo
+    parameters:
+      stiffness: 800
+      damping: 200
+      pretension: 0
+      max_tension: 70000.0
+  sphere:
+    class: tgSphereInfo
+    parameters:
+      friction: 1
+      density: 0.003
+      radius: 0.05
+
+

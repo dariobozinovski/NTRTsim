@@ -25,45 +25,24 @@ print(file_path)
 
 index = count()
 
-def parse_csv(file_path):
-    df = pd.read_csv(file_path, skiprows=2)  # Adjust skiprows if needed to match your CSV format
-    total_rod_columns = num_rods * data_per_rod
-    total_actuateted_columns = num_actuated_cables * data_per_spring
-    total_compound_columns = data_per_rod * num_comp
-    total_extension_columns = data_per_rod * num_ext
-    total_spring_columns = (len(df.columns) - total_rod_columns - total_actuateted_columns - total_compound_columns - total_extension_columns - 1) // data_per_spring
-    
-    column_names = ['Time']
-    for compound in range(1, num_comp + 1):
-        column_names += [f'Comp{compound}_X', f'Comp{compound}_Y', f'Comp{compound}_Z', f'Comp{compound}_EulerX', f'Comp{compound}_EulerY', f'Comp{compound}_EulerZ', f'Comp{compound}_mass']
-    
-    for rod in range(1, num_rods + 1):
-        column_names += [f'Rod{rod}_X', f'Rod{rod}_Y', f'Rod{rod}_Z', f'Rod{rod}_EulerX', f'Rod{rod}_EulerY', f'Rod{rod}_EulerZ', f'Rod{rod}_mass']
-    
-    for ext in range(1, num_ext + 1):
-        column_names += [f'ext{ext}_X', f'ext{ext}_Y', f'ext{ext}_Z', f'ext{ext}_EulerX', f'ext{ext}_EulerY', f'ext{ext}_EulerZ', f'ext{ext}_mass']
-    
-    for cable in range(1, num_actuated_cables + 1):
-        column_names += [f'ActuatedCable{cable}_RestLength', f'ActuatedCable{cable}_CurrentLength', f'ActuatedCable{cable}_Tension']
-    
-    for spring in range(1, total_spring_columns + 1):
-        column_names += [f'Spring{spring}_RestLength', f'Spring{spring}_CurrentLength', f'Spring{spring}_Tension']
 
-    column_names += ['to_delete']  # assuming there's a trailing unused column to delete
-    df = pd.read_csv(file_path, skiprows=2, names=column_names)
-    sim_timestep=df['Time'].iloc[-1]-df['Time'].iloc[-2]
+df = pd.read_csv(file_path, skiprows=1)  # Adjust skiprows if needed to match your CSV format
+total_rod_columns = num_rods * data_per_rod
+total_actuateted_columns = num_actuated_cables * data_per_spring
+total_compound_columns = data_per_rod * num_comp
+total_extension_columns = data_per_rod * num_ext
+total_spring_columns = (len(df.columns) - total_rod_columns - total_actuateted_columns - total_compound_columns - total_extension_columns - 1) // data_per_spring
     
-    return column_names,sim_timestep
-
-cl_names,sim_timestep=parse_csv(file_path)
+    
+sim_timestep=df['time'].iloc[-1]-df['time'].iloc[-2]
 time_range=30/sim_timestep
 def animate(i):
-    data = pd.read_csv(file_path, skiprows=2, names=cl_names)
+    data = pd.read_csv(file_path, skiprows=1)
     data=data.tail(int(time_range))
-    x = data['Time']
-    y1 = data['ActuatedCable1_Tension']*0.1
-    y2 = data['ActuatedCable2_Tension']*0.1
-    y3 = data['ActuatedCable3_Tension']*0.1
+    x = data['time']
+    y1 = data[next(col for col in df.columns if 'activated_cable c1' in col and col.endswith('.Tension'))]*0.1
+    y2 = data[next(col for col in df.columns if 'activated_cable c2' in col and col.endswith('.Tension'))]*0.1
+    y3 = data[next(col for col in df.columns if 'activated_cable c3' in col and col.endswith('.Tension'))]*0.1
     
 
     plt.cla()

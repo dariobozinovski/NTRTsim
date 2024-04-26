@@ -75,6 +75,28 @@ void updateYAMLStiffness(const std::string& filename, double newStiffness) {
         throw;
     }
 }
+void updateYAMLPretension(const std::string& filename, double newPretension) {
+    try {
+        YAML::Node config = YAML::LoadFile(filename);  // Load the current YAML file
+
+        if (config["builders"] && config["builders"]["springs"]) {
+            // Assuming the YAML structure has a builders -> springs -> parameters -> stiffness path
+            config["builders"]["springs"]["parameters"]["pretension"] = newPretension;
+        } else {
+            throw std::runtime_error("Invalid YAML structure: Expected 'builders/springs/parameters/pretension' path.");
+        }
+
+        // Save the modified YAML file back
+        std::ofstream fout(filename);
+        fout << config;
+    } catch (const YAML::ParserException& ex) {
+        std::cerr << "Failed to parse YAML file: " << ex.what() << std::endl;
+        throw;
+    } catch (const std::exception& ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
+        throw;
+    }
+}
 
 /// @brief 
 /// @param argc 
@@ -97,7 +119,17 @@ int main(int argc, char** argv)
     double rate = std::stod(argv[4]);
     double jumpTime = std::stod(argv[5]);
     bool datalogger = std::stod(argv[6]);
-
+    int nEpisodes = std::stod(argv[7]);
+    int initialsweepvalue = std::stod(argv[8]);
+    int stepsweepvalue = std::stod(argv[9]);
+    // int initialsweepvalue = 200;
+    // int stepsweepvalue = 10;
+    // int nEpisodes = 4;
+    // double startTime = 2;
+    // double minLength = 0.55;
+    // double rate = 0.2;
+    // double jumpTime = 17;
+    // bool datalogger = 1;
     // Output parsed variables for confirmation
     std::cout << "Start Time: " << startTime << std::endl;
     std::cout << "Minimum Length: " << minLength << std::endl;
@@ -130,7 +162,7 @@ int main(int argc, char** argv)
     // second argument.
     TensegrityModel* const myModel = new TensegrityModel(argv[1],false);
    
-    std::string yamlFilePath = "/home/ubuntu/NTRTsim/src/dev/dariostuff/models/iso4ACNC.yaml";
+    std::string yamlFilePath = "/home/ubuntu/NTRTsim/src/dev/dariostuff/models/iso3Aext.yaml";
     
     // Attach a controller to the model, if desired.
     // This is a controller that interacts with a generic TensegrityModel as
@@ -175,30 +207,33 @@ int main(int argc, char** argv)
       //tgRodSensorInfo* myRodSensorInfo = new tgRodSensorInfo();
       tgSpringCableActuatorSensorInfo* mySCASensorInfo =
         new tgSpringCableActuatorSensorInfo();
-      tgCompoundRigidSensorInfo* myCRSensorInfo = new tgCompoundRigidSensorInfo();
+    //   tgCompoundRigidSensorInfo* myCRSensorInfo = new tgCompoundRigidSensorInfo();
       tgRodSensorInfo* myRsensorInfo = new tgRodSensorInfo();
       // Attach the sensor infos to the data logger
       //myDataLogger->addSensorInfo(myRodSensorInfo);
       myDataLogger->addSensorInfo(mySCASensorInfo);
-      myDataLogger->addSensorInfo(myCRSensorInfo);
+    //   myDataLogger->addSensorInfo(myCRSensorInfo);
       myDataLogger->addSensorInfo(myRsensorInfo);
       // Next, attach it to the simulation
       simulation.addDataManager(myDataLogger);
       }
 
-    int nEpisodes = 1; // Number of episodes ("trial runs")
-    int nSteps = 30/timestep_physics;; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
-    for (int i=0; i<nEpisodes; i++) {
-      if (i > 0) { // Reset only for subsequent runs
-        myController->nextStep(); // Reset the controller state
-        updateYAMLStiffness(yamlFilePath,100+10*i);//set new stiffness      
-      }
-      
-      simulation.run(nSteps);
-      std::cout << "Episode " << (i+1 ) << " completed."<< std::endl;
-      simulation.reset();
+    int nSteps = 25/timestep_physics;; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
 
+    for (int i=0; i<nEpisodes; i++) {
+      
+      
+      
+      std::cout << "Episode " << (i+1 ) << " completed."<< std::endl;
+      if (i > 0) { // Reset only for subsequent runs
+        simulation.reset();  
+        myController->nextStep(); // Reset the controller state
+        updateYAMLStiffness(yamlFilePath,initialsweepvalue+stepsweepvalue*i);//set new stiffness   
+         
       }
+      simulation.run(nSteps);
+
+    }
     
     // teardown is handled by delete
     return 0;
