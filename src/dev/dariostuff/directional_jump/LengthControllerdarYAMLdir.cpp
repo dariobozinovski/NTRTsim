@@ -45,13 +45,16 @@
 // Constructor assigns variables, does some simple sanity checks.
 // Also, initializes the accumulator variable timePassed so that it can
 // be incremented in onStep.
+
 LengthControllerYAML::LengthControllerYAML(double startTime,
 					   double minLength,
 					   double rate,
              double jumpTime,
-					   std::vector<std::string> tagsToControl) :
+             double jumpdelay,
+					   std::vector<std::string> tagsToControl):
   m_startTime(startTime),
   m_jumpTime(jumpTime),
+  m_jumpdelay(jumpdelay),
   m_minLength(minLength),
   m_rate(rate),
   m_tagsToControl(tagsToControl),
@@ -75,10 +78,13 @@ LengthControllerYAML::LengthControllerYAML(double startTime,
   else if( m_rate < 0.0 ) {
     throw std::invalid_argument("Rate cannot be negative.");
   }
-  if( m_jumpTime < m_startTime &&m_jumpTime==0) {
+  // jump time must be greater than start time
+  else if( m_jumpTime < m_startTime &&m_jumpTime==0) {
     throw std::invalid_argument("Jump time must be greater than start Time or 0 for no jump");
   }
-  // @TODO: what checks to make on tags?
+  // jump delay must be greater than 0
+  
+
 }
 
 
@@ -107,6 +113,14 @@ void LengthControllerYAML::initializeActuators(TensegrityModel& subject,
 	      << initialRL[foundActuators[i]->getTags()] << std::endl;
     //DEBUG minlengthchange
     //std::cout << "target restlength:" <<m_minLength<< std::endl; 
+    //pick out the actuator with tag c1
+    
+      //cout name of actuator is the impostor
+            
+
+    std::vector<tgBasicActuator*> foundActuatorsc1 = subject.find<tgBasicActuator>("c1");
+    std::vector<tgBasicActuator*> foundActuatorsc2 = subject.find<tgBasicActuator>("c2");
+    std::vector<tgBasicActuator*> foundActuatorsc3 = subject.find<tgBasicActuator>("c3");
   }
   // Add this list of actuators to the full list. Thanks to:
   // http://stackoverflow.com/questions/201718/concatenating-two-stdvectors
@@ -132,14 +146,18 @@ void LengthControllerYAML::onSetup(TensegrityModel& subject)
     // Call the helper for this tag.
     initializeActuators(subject, *it);
   }
-  std::cout << "Finished setting up the controller." << std::endl;    
+  std::cout << "Finished setting up the controller." << std::endl;   
+  
 }
 
 void LengthControllerYAML::onStep(TensegrityModel& subject, double dt)
 {
+
   // First, increment the accumulator variable.
   m_timePassed += dt;
-  
+  //--------------------------------------------------------------------------------
+  //charging
+  //--------------------------------------------------------------------------------
   // Then, if it's passed the time to start the controller,
   if( m_timePassed > m_startTime&&!Ijumped) {
     //count number of steps
@@ -171,26 +189,48 @@ void LengthControllerYAML::onStep(TensegrityModel& subject, double dt)
       }
     }   
   }
-   //id time passed release all tension
-   if( m_timePassed > m_jumpTime) {
-    
+  //--------------------------------------------------------------------------------
+  //jumping
+  //--------------------------------------------------------------------------------
+  //if jumptime is reached release tension from actuated cables c1
+  //array with 3 zeros element named firsttime
+  
+
+  if (m_timePassed > m_jumpTime ) {
+
+    // Code to execute when m_timePassed is greater than m_jumpTime + m_jumpdelay
     Ijumped = 1;
-    //for eache cable remove tension
-    bool delay =0;
+    //for eache cable remove tension if cable 1 wait also for delay
     for (std::size_t i = 0; i < cablesWithTags.size(); i ++) {	
-      if(i!=0||m_timePassed > m_jumpTime+delay){
-        double currRestLength = cablesWithTags[i]->getRestLength();
-        //std::cout<<"prima: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<" ";
-        cablesWithTags[i]->setControlInput(initialRL[cablesWithTags[i]->getTags()],dt); 
-        //if(i==0)
-        //std::cout<<"dopo: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<"\n";
+      if(m_jumpdelay>0){
+        if(i!=0||m_timePassed > m_jumpTime+m_jumpdelay){
+          double currRestLength = cablesWithTags[i]->getRestLength();
+          //std::cout<<"prima: "<<initialRL[cablesWithTags[i]->getTags()]<<" "<<cablesWithTags[i]->getRestLength()<<" "<<m_timePassed<<" ";
+          cablesWithTags[i]->setControlInput(initialRL[cablesWithTags[i]->getTags()],dt); 
+          //print when the first time every cable is released and time of reease
+          // if(firstTime[i]==0){
+          //   std::cout<<"cable "<<cablesWithTags[i]->getTags()<<" released at time: "<<m_timePassed<<std::endl;
+          //   firstTime[i]=1;
+          // }
+
+        }
+      } 
+      else{
+        if ((i != 1 && i != 2 )|| m_timePassed > m_jumpTime - m_jumpdelay) {
+          double currRestLength = cablesWithTags[i]->getRestLength();
+          cablesWithTags[i]->setControlInput(initialRL[cablesWithTags[i]->getTags()], dt);
+          // if (firstTime[i] == 0) {
+          //   std::cout << "caaaaable " << cablesWithTags[i]->getTags() << " released at time: " << m_timePassed << std::endl;
+          //   firstTime[i] = 1;
+
+          // }
+        }
+        
       }
-      
-    } 
-    
-    
+    }
   }
-  //std::cout<<initialRL[cablesWithTags[0]->getTags()]<<" "<<cablesWithTags[0]->getRestLength()<<" "<<m_timePassed<<"\n";
+
+
 }
 void LengthControllerYAML::reset() {
     m_timePassed = 0.0;

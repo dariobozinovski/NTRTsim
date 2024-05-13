@@ -96,12 +96,14 @@ int main(int argc, char** argv)
     double minLength = std::stod(argv[3]);
     double rate = std::stod(argv[4]);
     double jumpTime = std::stod(argv[5]);
+    double jumpdelay = std::stod(argv[6]);
 
     // Output parsed variables for confirmation
     std::cout << "Start Time: " << startTime << std::endl;
     std::cout << "Minimum Length: " << minLength << std::endl;
     std::cout << "Rate: " << rate << std::endl;
     std::cout << "Jump Time: " << jumpTime << std::endl;
+    std::cout << "Jump Delay: " << jumpdelay << std::endl;
   
     // create the ground and world. Specify ground rotation in radians
     const double yaw = 0.0;
@@ -117,7 +119,7 @@ int main(int argc, char** argv)
     // create the view
     const double timestep_physics = 0.0001; // seconds
     //const double timestep_physics = 0.001;
-    const double timestep_graphics = 1.f/60.f; // seconds
+    const double timestep_graphics = 1.f/(60.f); // seconds
 
     tgSimViewGraphics view(world, timestep_physics, timestep_graphics);  //visualize one tensegrity
     //tgSimView view(world, timestep_physics, timestep_graphics);        // For running multiple episodes
@@ -144,7 +146,7 @@ int main(int argc, char** argv)
     tagsToControl.push_back("activated_cable");
     
     // Create the controller
-     LengthControllerYAML* const myController = new LengthControllerYAML(startTime, minLength, rate,jumpTime, tagsToControl);
+     LengthControllerYAML* const myController = new LengthControllerYAML(startTime, minLength, rate,jumpTime,jumpdelay,tagsToControl);
     
     // Attach the controller to the model
     
@@ -153,7 +155,7 @@ int main(int argc, char** argv)
     simulation.addModel(myModel);
     
     //data logger
-    bool datalogger=1;
+    bool datalogger=0;
     if(datalogger){
       // Add sensors using the new sensing framework
       // A string prefix for the filename
@@ -183,7 +185,7 @@ int main(int argc, char** argv)
       }
 
     int nEpisodes = 1; // Number of episodes ("trial runs")
-    int nSteps = 100000; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
+    int nSteps = 25/timestep_physics; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
     for (int i=0; i<nEpisodes; i++) {
       if (i > 0) { // Reset only for subsequent runs
         myController->nextStep(); // Reset the controller state

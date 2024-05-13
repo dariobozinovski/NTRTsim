@@ -58,13 +58,15 @@ public:
    * @param[in] rate, the rate at which the rest length of the cables will be
    * changed. Expressed in meters/sec.
    * @param[in] jumpTime, a double that determines when the controller
-   * decideds to jump, how many seconds after the simulation starts.
+   * decideds to jump with the first ac, how many seconds after the simulation starts.
+   * @param[in] jumpdelay, a double that determines when the controller
+   * decideds to jump whith the remaining 2 actuators, how many seconds after the simulation starts.
    * @param[in] tagsToControl, a vector (array) of strings, which is a list of the 
    * tags of all the
    * cables upon which to act. All the cables which have a tag in this list of tags
    * will be acted upon by this controller.
    */
-  LengthControllerYAML(double startTime, double minLength, double rate,double jumpTime,
+  LengthControllerYAML(double startTime, double minLength, double rate,double jumpTime,double jumpdelay,
 			    std::vector<std::string> tagsToControl);
     
   /**
@@ -109,6 +111,7 @@ private:
   double m_minLength;
   double m_rate;
   double m_jumpTime;
+  double m_jumpdelay;
   std::vector<std::string> m_tagsToControl;
 
   /**
@@ -127,7 +130,7 @@ private:
    */
   typedef std::map<tgTags, double> InitialRestLengths;
   InitialRestLengths initialRL;
-
+  std::array<bool, 3> firstTime = {0, 0, 0}; 
   /**
    * A list of all the actuators to control. This is populated in onSetup
    * by using m_tagsToControl.

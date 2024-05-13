@@ -218,7 +218,7 @@ int main(int argc, char** argv)
       simulation.addDataManager(myDataLogger);
       }
 
-    int nSteps = 25/timestep_physics;; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
+    int nSteps = 25/timestep_physics;// Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
 
     for (int i=0; i<nEpisodes; i++) {
       
