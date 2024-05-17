@@ -4,7 +4,9 @@ build_test
 build_test_integration
 conf/*.conf
 src/DoxyDocs
-
+NTRTsim_logs/plots
+NTRTsim_logs/plotting
+NTRTsim_logs/to_plot
 .cproject
 
 .project
