@@ -51,6 +51,9 @@ LengthControllerYAML::LengthControllerYAML(double startTime,
 					   double rate,
              double jumpTime,
              double jumpdelay,
+             double extra1,
+             double extra2,
+             double extra3,
 					   std::vector<std::string> tagsToControl):
   m_startTime(startTime),
   m_jumpTime(jumpTime),
@@ -59,7 +62,9 @@ LengthControllerYAML::LengthControllerYAML(double startTime,
   m_rate(rate),
   m_tagsToControl(tagsToControl),
   m_timePassed(0.0),
-  
+  m_extra1(extra1),
+  m_extra2(extra2),
+  m_extra3(extra3),
   Ijumped(0)
   
 {
@@ -118,10 +123,14 @@ void LengthControllerYAML::initializeActuators(TensegrityModel& subject,
       //cout name of actuator is the impostor
             
 
-    std::vector<tgBasicActuator*> foundActuatorsc1 = subject.find<tgBasicActuator>("c1");
-    std::vector<tgBasicActuator*> foundActuatorsc2 = subject.find<tgBasicActuator>("c2");
-    std::vector<tgBasicActuator*> foundActuatorsc3 = subject.find<tgBasicActuator>("c3");
+    
   }
+  std::vector<tgBasicActuator*> foundActuatorsc1 = subject.find<tgBasicActuator>("c1");
+  std::vector<tgBasicActuator*> foundActuatorsc2 = subject.find<tgBasicActuator>("c2");
+  std::vector<tgBasicActuator*> foundActuatorsc3 = subject.find<tgBasicActuator>("c3");
+  std::cout << foundActuatorsc1[0]->getTags() << std::endl;
+  std::cout << foundActuatorsc2[0]->getTags() << std::endl;
+  std::cout << foundActuatorsc3[0]->getTags() << std::endl;
   // Add this list of actuators to the full list. Thanks to:
   // http://stackoverflow.com/questions/201718/concatenating-two-stdvectors
   cablesWithTags.insert( cablesWithTags.end(), foundActuators.begin(),
@@ -168,12 +177,21 @@ void LengthControllerYAML::onStep(TensegrityModel& subject, double dt)
       double currRestLength = cablesWithTags[i]->getRestLength();
       // Calculate the minimum rest length for this cable.
       // Remember that m_minLength is a percent.
-      double extra=0;
+      double extra = 0;
+      // printf("cable %s\n",foundActuatorsc1[0]->getTags());
       if(i==0){
-        extra=0;
-
+        extra=m_extra1;
       }
-      double minRestLength = initialRL[cablesWithTags[i]->getTags()] * m_minLength+extra;
+      else if(i==1){
+        extra=m_extra2;
+      }
+      else if(i==2){
+        extra=m_extra3;
+      }
+      
+      //print extra and cable name
+      //std::cout<<" "<<cablesWithTags[i]->getTags()<<"extra: "<<extra<<std::endl;
+      double minRestLength = initialRL[cablesWithTags[i]->getTags()] * (m_minLength+extra);
       // If the current rest length is still greater than the minimum,
       if( currRestLength > minRestLength ) {
 	      // output a progress bar for the controller, to track when control occurs.

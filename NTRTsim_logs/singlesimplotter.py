@@ -7,6 +7,7 @@ from itertools import cycle
 from shutil import rmtree
 import plotly.express as px
 import plotly.graph_objects as go
+from scipy.spatial.transform import Rotation as R
 
 # Constants based on the structure described
 num_rods = 6
@@ -22,16 +23,17 @@ num_ext=0
 k=400
 
 #which graph do I want
-CMtoHeight=0
-TotEneStor=0
-springStackPlot=0
-extensionRate=0
-actuator_tension_plotter=0
-springTension=0
-actuators_extensionrate=0
-forceoverextension=0
-positionplot=0
-roddistance=1
+CMtoHeight=1
+TotEneStor=1
+springStackPlot=1
+extensionRate=1
+actuator_tension_plotter=1
+springTension=1
+actuators_extensionrate=1
+forceoverextension=1
+positionplot=1
+roddistance=0
+
 #num_rods*data_per_rod+
 # Definire i percorsi delle directory
 
@@ -242,7 +244,7 @@ for file_name in all_files:
         # Convertire l'elenco delle energie in un DataFrame per facilitare il plot
         energy_df = pd.DataFrame(energies).T
         # Rinominare le colonne per chiarezza
-        energy_df.columns = [f'Spring {i+1} Energy' for i in range(total_spring_columns)]
+        energy_df.columns = [f'Spring {i+1} Energy' for i in range(len(curr))]
 
         # Creare il grafico area in pila
         plt.figure(figsize=(14, 7))
@@ -463,6 +465,7 @@ for file_name in all_files:
                                 (y_pos.iloc[rod1] - y_pos.iloc[rod2])**2 +
                                 (z_pos.iloc[rod1] - z_pos.iloc[rod2])**2)
                 print(f"Distance between rod {rod1} and rod {rod2}: {distance:.2f} m")
+    
     # Incrementare il contatore per il prossimo file
     file_counter += 1
     

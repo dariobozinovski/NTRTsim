@@ -112,7 +112,7 @@ for i,file_name in enumerate(all_files_sorted):
         #find end positions of rods in contact with ground
         rod_length=0.5
         #find the rods that are in contact with the ground
-        y_rod_xmin=df[y].iloc[min_y_index-800]
+        y_rod_xmin=df[y].iloc[0]
         # print("y_rod",y_rod_xmin)
         y_rod_xmin=y_rod_xmin.sort_values().iloc[:3]
         # print("y_rod",y_rod_xmin)
