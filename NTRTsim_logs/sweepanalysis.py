@@ -6,13 +6,14 @@ import re
 from itertools import cycle
 from shutil import rmtree
 import plotly.graph_objects as go
+import plotly.express as px
  #plots
-CMtoHeight=1
-jump_distance=1
-landingspots=1
-
+CMtoHeight=0
+jump_distance=0
+landingspots=0
+distancepret=1
 #defining the directory path
-directory_path = "/home/ubuntu/NTRTsim/NTRTsim_logs/plotting"
+directory_path = "/home/ubuntu/NTRTsim/NTRTsim_logs/plotting/simmoonpretension/"
 directory_path_save = "/home/ubuntu/NTRTsim/NTRTsim_logs/plots"
 if not os.path.exists(directory_path):
     os.makedirs(directory_path)
@@ -31,6 +32,7 @@ def extract_number(filename):
     return int(s[0]) if s else -1
 all_files = [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
 all_files_sorted = sorted(all_files, key=extract_number)
+
 file_counter = 1
 #data to plot
 #CMtoHeight
@@ -48,8 +50,8 @@ Rod_mid_z=[]
 
 
 #num_of_sim is an array that contains starting from startk with step stepk the number of the simulation (adjust to sweep that has ben made)
-startk=1
-stepk=-0.01
+startk=0.5
+stepk=-0.02
 num_of_sim = np.arange(startk, startk + stepk * (len(all_files_sorted) - 0.99), stepk)
 num_of_sim=np.round(num_of_sim,2)
 
@@ -62,8 +64,8 @@ for i,file_name in enumerate(all_files_sorted):
     df = pd.read_csv(file_path, skiprows=1)
     print("file number: ",i+1,"file_name",file_name)
     #remove first to seconds
-    sim_timestep=df['time'].iloc[-1]-df['time'].iloc[-2]
-    df=df.iloc[int(2/sim_timestep):].reset_index(drop=True)
+    sim_timestep=round(df['time'].iloc[-1]-df['time'].iloc[-2],5)
+    # df=df.iloc[int(2/sim_timestep):].reset_index(drop=True)
     
     #CMy
     if(CMtoHeight):
@@ -78,7 +80,7 @@ for i,file_name in enumerate(all_files_sorted):
     #Jump distance
     #plot in y: difference in x and z (use pythagorean theorem)position of the center of mass between the two moments when y is maximum and minimum. in x axis the number of the simulation 
     
-    if(jump_distance or landingspots):
+    if(jump_distance or landingspots or distancepret):
         # Define columns for X, Y, Z coordinates
         x = [col for col in df.columns if 'prism_rod' in col and col.endswith('.X')]
         y = [col for col in df.columns if 'prism_rod' in col and col.endswith('.Y')]
@@ -89,15 +91,26 @@ for i,file_name in enumerate(all_files_sorted):
         CM_y = df[y].mean(axis=1) * 0.1
         CM_z = df[z].mean(axis=1) * 0.1
         
+
         #find the max and min y position
+        
         max_y_index=CM_y.idxmax()
         min_y_index=CM_y.idxmin()
-        
+        # Find the index of the first decreasing value from the 6th second
+        start_index = int(6 / sim_timestep) 
+        decreasing_index = start_index + np.argmax(np.diff(CM_y[start_index:]) < 0) + 1
+        decreasing_second=decreasing_index*sim_timestep
         #find the x and z position of the center of mass in the two moments
-        CM_x_maxy=CM_x[max_y_index]
-        CM_x_miny=CM_x[min_y_index]
-        CM_z_maxy=CM_z[max_y_index]    
-        CM_z_miny=CM_z[min_y_index]
+        CM_x_maxy=CM_x[decreasing_index]
+        # CM_x_miny=CM_x[min_y_index]
+        CM_z_maxy=CM_z[decreasing_index]    
+        # CM_z_miny=CM_z[min_y_index]
+        
+        index_prejump=int((6/sim_timestep)-0.99)
+        CM_x_miny=CM_x[index_prejump]
+          
+        CM_z_miny=CM_z[index_prejump]
+
 
         #calculate the distance
         distance=np.sqrt((CM_x_maxy-CM_x_miny)**2+(CM_z_maxy-CM_z_miny)**2)*2
@@ -173,12 +186,13 @@ if(jump_distance):
     fig.write_html(plot2_path)
     
 if(landingspots):
+
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
         x=CM_xd_jump,
         y=CM_zd_jump,
-        mode='lines+markers',
+        mode='markers+lines',
         name='Jump positions',
         
         #hover info: Jump Distance: %{y} m, Jump Delay: %{x} s, Max Y Position: %{customdata[0]} m, Min Y Position: %{customdata[1]} m, Max X Position: %{customdata[2]} m, Max Z Position: %{customdata[3]} m',
@@ -213,3 +227,93 @@ if(landingspots):
     fig.show()
     plot2_path = os.path.join(new_plots_directory_path, "landingspots.html")
     fig.write_html(plot2_path)
+if distancepret:
+    # Generate the parameter values
+    jump_extra1_values = []
+    jump_extra2_values = []
+    jump_extra3_values = []
+
+    for i in range(21):
+        jump_extra1 = round(0.5 - 0.025 * i, 2)
+        for j in range(21):
+            jump_extra2 = round(0.5 - 0.025 * j, 2)
+            for k in range(21):
+                jump_extra3 = round(0.5 - 0.025 * k, 3)
+                jump_extra1_values.append(jump_extra1)
+                jump_extra2_values.append(jump_extra2)
+                jump_extra3_values.append(jump_extra3)
+
+    # Check if the lengths match
+    assert len(jump_dist) == len(jump_extra1_values) == len(jump_extra2_values) == len(jump_extra3_values), "Lengths of distances and parameters do not match"
+
+    # Create a DataFrame
+    data = {
+        'jump_extra1': jump_extra1_values,
+        'jump_extra2': jump_extra2_values,
+        'jump_extra3': jump_extra3_values,
+        'distance': jump_dist
+    }
+    df = pd.DataFrame(data)
+
+    # Create the 3D scatter plot
+    fig = px.scatter_3d(df, x='jump_extra1', y='jump_extra2', z='jump_extra3', color='distance',
+                        title='3D Scatter Plot of Jump Distance',
+                        labels={'jump_extra1': 'Jump Extra 1', 'jump_extra2': 'Jump Extra 2', 'jump_extra3': 'Jump Extra 3', 'distance': 'Jump Distance'},
+                        color_continuous_scale='Viridis')
+
+    # Show the plot
+    fig.show()
+    plot3_path = os.path.join(new_plots_directory_path, "colored3Dolpt(boxofDoom).html")
+    fig.write_html(plot3_path)
+    # Create the initial 3D scatter plot
+    fig = go.Figure()
+
+    # Add a scatter plot for each unique value of jump_extra3
+    for jump_extra3_value in df['jump_extra3'].unique():
+        filtered_df = df[df['jump_extra3'] == jump_extra3_value]
+        scatter = go.Scatter3d(
+            x=filtered_df['jump_extra1'],
+            y=filtered_df['jump_extra2'],
+            z=filtered_df['distance'],
+            mode='markers',
+            name=f'jump_extra3 = {jump_extra3_value}',
+            visible=False  # Initially set all traces to invisible
+        )
+        fig.add_trace(scatter)
+
+    # Make the first scatter plot visible
+    fig.data[0].visible = True
+
+    # Create the slider steps
+    steps = []
+    for i in range(len(fig.data)):
+        step = dict(
+            method='update',
+            args=[{'visible': [False] * len(fig.data)}],
+            label=f'jump_extra3 = {df["jump_extra3"].unique()[i]}'
+        )
+        step['args'][0]['visible'][i] = True  # Toggle i-th trace to visible
+        steps.append(step)
+
+    # Create the slider
+    sliders = [dict(
+        active=0,
+        pad={"t": 50},
+        steps=steps
+    )]
+
+    # Update the layout with slider
+    fig.update_layout(
+        sliders=sliders,
+        scene=dict(
+            xaxis_title='Jump Extra 1',
+            yaxis_title='Jump Extra 2',
+            zaxis_title='Distance'
+        ),
+        title='3D Scatter Plot of Jump Distance with Slider for Jump Extra 3'
+    )
+
+    # Show the plot
+    fig.show()
+    plot4_path = os.path.join(new_plots_directory_path, "scrollabledistanceplot.html")
+    fig.write_html(plot4_path)

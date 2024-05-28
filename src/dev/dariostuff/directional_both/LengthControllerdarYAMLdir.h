@@ -66,7 +66,7 @@ public:
    * cables upon which to act. All the cables which have a tag in this list of tags
    * will be acted upon by this controller.
    */
-  LengthControllerYAML(double startTime, double minLength, double rate,double jumpTime,double jumpdelay,
+  LengthControllerYAML(double startTime, double minLength, double rate,double jumpTime,double jumpdelay1,double jumpdelay2,double jumpdelay3,double extra1,double exra2,double extra3,
 			    std::vector<std::string> tagsToControl);
     
   /**
@@ -111,8 +111,15 @@ private:
   double m_minLength;
   double m_rate;
   double m_jumpTime;
-  double m_jumpdelay;
+  double m_jumpdelay1;
+  double m_jumpdelay2;
+  double m_jumpdelay3;
+  double m_extra1;
+  double m_extra2;
+  double m_extra3;
+  
   std::vector<std::string> m_tagsToControl;
+  
 
   /**
    * Need an accumulator variable to determine when to start the controller.
@@ -136,7 +143,9 @@ private:
    * by using m_tagsToControl.
    */
   std::vector<tgBasicActuator*> cablesWithTags;
-
+  std::vector<tgBasicActuator*> foundActuatorsc1;
+  std::vector<tgBasicActuator*> foundActuatorsc2;
+  std::vector<tgBasicActuator*> foundActuatorsc3;
 };
 
 #endif // HORIZONTAL_SPINE_CONTROLLER_H

@@ -22,6 +22,7 @@ num_ext=0
 #physical parameters
 k=400
 
+changenames=0
 #which graph do I want
 CMtoHeight=1
 TotEneStor=1
@@ -33,7 +34,7 @@ actuators_extensionrate=1
 forceoverextension=1
 positionplot=1
 roddistance=0
-
+work_donee=0
 #num_rods*data_per_rod+
 # Definire i percorsi delle directory
 
@@ -58,14 +59,19 @@ all_files = [f for f in all_files if os.path.isfile(os.path.join(directory_path,
 file_counter = 1
 
 for file_name in all_files:
-    # Definire il nuovo nome del file e la nuova directory per i plot
-    new_file_name = f"sim{file_counter}.csv"
-    new_file_path = os.path.join(directory_path, new_file_name)
-    new_plots_directory_path = os.path.join(directory_path_save, f"sim{file_counter}_plots")
-    
-    # Rinomina il file originale nel nuovo percorso con il nome disponibile
-    os.rename(os.path.join(directory_path, file_name), new_file_path)
-
+    if changenames:
+        # Definire il nuovo nome del file e la nuova directory per i plot
+        new_file_name = f"sim{file_counter}.csv"
+        new_file_path = os.path.join(directory_path, new_file_name)
+        new_plots_directory_path = os.path.join(directory_path_save, f"sim{file_counter}_plots")
+        
+        # Rinomina il file originale nel nuovo percorso con il nome disponibile
+        os.rename(os.path.join(directory_path, file_name), new_file_path)
+    else:
+        new_file_name = file_name
+        file_base_name, file_extension = os.path.splitext(new_file_name)
+        new_file_path=os.path.join(directory_path,file_name)
+        new_plots_directory_path = os.path.join(directory_path_save,file_base_name+"_plots")
     # Create a directory for plots associated with the simulation in the plots directory
     if not os.path.exists(new_plots_directory_path):
         os.makedirs(new_plots_directory_path)
@@ -331,22 +337,22 @@ for file_name in all_files:
         plt.savefig(plot_path5)
         plt.close()
     # Initialize a list to hold work calculations for each cable
-    
-    work_done = []
-    tot_work=0
-    for cable_tens in [cable for cable in df.columns if 'activated_cable' in cable and cable.endswith('.Tension')]:
-        tensions = df[cable_tens]*0.1  
-        lengths = df[cable_tens.replace('Tension', 'CurrLen')]*0.1
-        # Calculate the work done using the trapezoidal rule
-        work = np.trapz(tensions, x=lengths)  # `x` denotes the values of length over which tension is applied
+    if work_donee:
+        work_done = []
+        tot_work=0
+        for cable_tens in [cable for cable in df.columns if 'activated_cable' in cable and cable.endswith('.Tension')]:
+            tensions = df[cable_tens]*0.1  
+            lengths = df[cable_tens.replace('Tension', 'CurrLen')]*0.1
+            # Calculate the work done using the trapezoidal rule
+            work = np.trapz(tensions, x=lengths)  # `x` denotes the values of length over which tension is applied
+            
+            # Store the calculated work
+            work_done.append(work)
+            
+            tot_work=np.sum(work_done)
+            print(f"Work done by {cable_tens} in sim{file_counter}: {work:.2f} units")
+        print("tot work is:",tot_work)
         
-        # Store the calculated work
-        work_done.append(work)
-        
-        tot_work=np.sum(work_done)
-        print(f"Work done by {cable_tens} in sim{file_counter}: {work:.2f} units")
-    print("tot work is:",tot_work)
-    
     #plotting force over extension during compression
     if(forceoverextension):
 
@@ -406,7 +412,7 @@ for file_name in all_files:
         # Create scatter plot
         fig.add_trace(go.Scatter3d(
             x=x_pos, y=z_pos, z=y_pos,
-            mode='markers',
+            mode='markers+lines',
             marker=dict(
                 size=5,
                 color=color_values,  # Apply color logic

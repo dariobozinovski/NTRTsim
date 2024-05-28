@@ -93,7 +93,7 @@ int main(int argc, char** argv)
     // fill varibles startTime, minLenght, rate, jumpTime trough argv[2], argv[3], argv[4], argv[5]
     // Parse additional command-line arguments
     double rate = 0.5;
-    bool datalogger =1;
+    bool datalogger =0;
 
     // Output parsed variables for confirmation
   

@@ -127,10 +127,10 @@ int main(int argc, char** argv)
     // create the view
     const double timestep_physics = 0.0001; // seconds
     //const double timestep_physics = 0.001;
-    const double timestep_graphics = 1.f/(60.f); // seconds
+    const double timestep_graphics = 1.f/(60.f*3); // seconds
 
-    //tgSimViewGraphics view(world, timestep_physics, timestep_graphics);  //visualize one tensegrity
-    tgSimView view(world, timestep_physics, timestep_graphics);        // For running multiple episodes
+    tgSimViewGraphics view(world, timestep_physics, timestep_graphics);  //visualize one tensegrity
+    //tgSimView view(world, timestep_physics, timestep_graphics);        // For running multiple episodes
     // create the simulation
     tgSimulation simulation(view);
 
@@ -163,14 +163,14 @@ int main(int argc, char** argv)
     simulation.addModel(myModel);
     
     //data logger
-    bool datalogger=1;
+    bool datalogger=0;
     if(datalogger){
       // Add sensors using the new sensing framework
       // A string prefix for the filename
       std::string log_filename = "~/NTRTsim/NTRTsim_logs/to_plot/";
     
       // The time interval between sensor readings:
-      double timeInterval = 0.05;
+      double timeInterval = 0.01;
       // First, create the data manager
       tgDataLogger2* myDataLogger = new tgDataLogger2(log_filename, timeInterval);
       //std::cout << myDataLogger->toString() << std::endl;
@@ -193,16 +193,17 @@ int main(int argc, char** argv)
       }
 
     int nEpisodes = 1; // Number of episodes ("trial runs")
-    int nSteps = 9/timestep_physics; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
+    int nSteps = 20/timestep_physics; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
     for (int i=0; i<nEpisodes; i++) {
       if (i > 0) { // Reset only for subsequent runs
         myController->nextStep(); // Reset the controller state
-        updateYAMLStiffness(yamlFilePath,100+10*i);//set new stiffness      
+        updateYAMLStiffness(yamlFilePath,100+10*i);//set new stiffness  
+        simulation.reset();    
       }
       
       simulation.run(nSteps);
       std::cout << "Episode " << (i+1 ) << " completed."<< std::endl;
-      simulation.reset();
+      
 
       }
     

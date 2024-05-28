@@ -1,28 +1,4 @@
 #!/bin/bash
-cd /home/ubuntu/NTRTsim/build/dev/dariostuff/directional_jump
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.5
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.48
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.46
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.44
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.42
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.4
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.38
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.36
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.34
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.32
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.3
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.28
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.26
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.24
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.22
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.2
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.18
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.16
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.14
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.12
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.1
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.08
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.06
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.04
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.02
-./AppisocDarYAMLdir /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aext.yaml 2.0 0.5 0.3 17 0.0
+cd /home/ubuntu/NTRTsim/build/dev/dariostuff/directional_both/
+#./AppisocDarYAMLdirboth /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aextalligned.yaml 1.0 0.5 1 6  0.0056611432596065745 0.28216498942483814 0.4146651070605857 0.2584031192167763 0.3739897594965426 0
+ ./AppisocDarYAMLdirboth /home/ubuntu/NTRTsim/src/dev/dariostuff/models/isodrop3Aextalligned.yaml 1.0 0.5 1 6  0.21869023951824879 0.11168687947775074 0.2216598290558549 0.28772038262939564 0.26028586861318226 0.05277439798976055

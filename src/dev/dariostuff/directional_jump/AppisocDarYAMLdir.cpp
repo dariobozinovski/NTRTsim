@@ -113,7 +113,7 @@ int main(int argc, char** argv)
     // the world will delete this
     tgBoxGround* ground = new tgBoxGround(groundConfig);
 
-    const tgWorld::Config config(98.1); // gravity, dm/sec^2
+    const tgWorld::Config config(16.2); // gravity, dm/sec^2
     tgWorld world(config, ground);
 
     // create the view
@@ -121,8 +121,8 @@ int main(int argc, char** argv)
     //const double timestep_physics = 0.001;
     const double timestep_graphics = 1.f/(60.f); // seconds
 
-    tgSimViewGraphics view(world, timestep_physics, timestep_graphics);  //visualize one tensegrity
-    //tgSimView view(world, timestep_physics, timestep_graphics);        // For running multiple episodes
+    //tgSimViewGraphics view(world, timestep_physics, timestep_graphics);  //visualize one tensegrity
+    tgSimView view(world, timestep_physics, timestep_graphics);        // For running multiple episodes
     // create the simulation
     tgSimulation simulation(view);
 
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
     simulation.addModel(myModel);
     
     //data logger
-    bool datalogger=0;
+    bool datalogger=1;
     if(datalogger){
       // Add sensors using the new sensing framework
       // A string prefix for the filename
@@ -185,16 +185,17 @@ int main(int argc, char** argv)
       }
 
     int nEpisodes = 1; // Number of episodes ("trial runs")
-    int nSteps = 25/timestep_physics; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
+    int nSteps = 15/timestep_physics; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
     for (int i=0; i<nEpisodes; i++) {
       if (i > 0) { // Reset only for subsequent runs
         myController->nextStep(); // Reset the controller state
         updateYAMLStiffness(yamlFilePath,100+10*i);//set new stiffness      
+        simulation.reset();
       }
       
       simulation.run(nSteps);
       std::cout << "Episode " << (i+1 ) << " completed."<< std::endl;
-      simulation.reset();
+      
 
       }
     

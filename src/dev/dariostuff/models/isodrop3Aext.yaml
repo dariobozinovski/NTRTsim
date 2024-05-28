@@ -4,9 +4,17 @@ substructures:
   6BarSphere:
     path: ./iso3Aext.yaml
     translation: [0,2,0]
+    #position on 3 spring actuated face
     rotation:
       axis: [-1.7,0,1]
       angle: -42
+    #position on 1 spring actuated face
+    #rotation:
+    #  axis: [1,2,1]
+    #  angle: -42
+
+
+
     
 
      

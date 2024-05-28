@@ -7,6 +7,10 @@ src/DoxyDocs
 NTRTsim_logs/plots
 NTRTsim_logs/plotting
 NTRTsim_logs/to_plot
+NTRTsim_logs/GA_failed
+NTRTsim_logs/GAbetter
+NTRTsim_logs/GA_moon
+
 .cproject
 
 .project

@@ -96,14 +96,26 @@ int main(int argc, char** argv)
     double minLength = std::stod(argv[3]);
     double rate = std::stod(argv[4]);
     double jumpTime = std::stod(argv[5]);
-    double jumpdelay = std::stod(argv[6]);
+    double jumpdelay1 = std::stod(argv[6]);
+    double jumpdelay2 = std::stod(argv[7]);
+    double jumpdelay3 = std::stod(argv[8]);
+    double extra1 = std::stod(argv[9]);
+    double extra2 = std::stod(argv[10]);
+    double extra3 = std::stod(argv[11]);
 
     // Output parsed variables for confirmation
-    std::cout << "Start Time: " << startTime << std::endl;
-    std::cout << "Minimum Length: " << minLength << std::endl;
-    std::cout << "Rate: " << rate << std::endl;
-    std::cout << "Jump Time: " << jumpTime << std::endl;
-    std::cout << "Jump Delay: " << jumpdelay << std::endl;
+    // std::cout << "Start Time: " << startTime << std::endl;
+    // std::cout << "Minimum Length: " << minLength << std::endl;
+    // std::cout << "Rate: " << rate << std::endl;
+    // std::cout << "Jump Time: " << jumpTime << std::endl;
+    // std::cout << "Jump Delay1: " << jumpdelay1 << std::endl;
+    // std::cout << "Jump Delay2: " << jumpdelay2 << std::endl;
+    // std::cout << "Jump Delay3: " << jumpdelay3 << std::endl;
+    // std::cout << "Extra Length c1: " << extra1 << std::endl;
+    // std::cout << "Extra Length c2: " << extra2 << std::endl;
+    // std::cout << "Extra Length c3: " << extra3 << std::endl;
+
+
   
     // create the ground and world. Specify ground rotation in radians
     const double yaw = 0.0;
@@ -113,7 +125,7 @@ int main(int argc, char** argv)
     // the world will delete this
     tgBoxGround* ground = new tgBoxGround(groundConfig);
 
-    const tgWorld::Config config(98.1); // gravity, dm/sec^2
+    const tgWorld::Config config(16.2); // gravity, dm/sec^2 16.2 for moon 98.1 for earth
     tgWorld world(config, ground);
 
     // create the view
@@ -146,7 +158,7 @@ int main(int argc, char** argv)
     tagsToControl.push_back("activated_cable");
     
     // Create the controller
-     LengthControllerYAML* const myController = new LengthControllerYAML(startTime, minLength, rate,jumpTime,jumpdelay,tagsToControl);
+     LengthControllerYAML* const myController = new LengthControllerYAML(startTime, minLength, rate,jumpTime,jumpdelay1,jumpdelay2,jumpdelay3,extra1,extra2,extra3,tagsToControl);
     
     // Attach the controller to the model
     
@@ -155,14 +167,14 @@ int main(int argc, char** argv)
     simulation.addModel(myModel);
     
     //data logger
-    bool datalogger=0;
+    bool datalogger=1;
     if(datalogger){
       // Add sensors using the new sensing framework
       // A string prefix for the filename
       std::string log_filename = "~/NTRTsim/NTRTsim_logs/to_plot/";
     
       // The time interval between sensor readings:
-      double timeInterval = 0.005;
+      double timeInterval = 0.01;
       // First, create the data manager
       tgDataLogger2* myDataLogger = new tgDataLogger2(log_filename, timeInterval);
       //std::cout << myDataLogger->toString() << std::endl;
@@ -185,16 +197,17 @@ int main(int argc, char** argv)
       }
 
     int nEpisodes = 1; // Number of episodes ("trial runs")
-    int nSteps = 25/timestep_physics; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
+    int nSteps = 10/timestep_physics; // Number of steps in each episode, 60k is 100 seconds (timestep_physics*nSteps)
     for (int i=0; i<nEpisodes; i++) {
       if (i > 0) { // Reset only for subsequent runs
+        simulation.reset();
         myController->nextStep(); // Reset the controller state
         updateYAMLStiffness(yamlFilePath,100+10*i);//set new stiffness      
       }
       
       simulation.run(nSteps);
-      std::cout << "Episode " << (i+1 ) << " completed."<< std::endl;
-      simulation.reset();
+      //std::cout << "Episode " << (i+1 ) << " completed."<< std::endl;
+      
 
       }
     
